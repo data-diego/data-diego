@@ -1,6 +1,5 @@
 <h1 align="center">Hi 👋, I'm Diego</h1>
 <h3 align="center">A tech creator from Chile</h3>
-<h3 align="center">I am become dev, the programmer of worlds</h3>
 
 ## 💬 Ask me about
 - Mobile development
