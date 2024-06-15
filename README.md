@@ -2,11 +2,9 @@
 <h3 align="center">A tech creator from Chile</h3>
 
 ## 💬 Ask me about
-- Mobile development
-- Web development
+- Web and mobile development
 - Entrepreneurship
 - UI/UX
-- Data visualization
 - Arduino
 - Virtual reality
 
@@ -16,6 +14,6 @@
 - Where was I on February 29th 2019
 
 ## 📅 Hobbies
-- Music as in chill jazz, r&b, I play 🎷and 🎸
+- Music as in chill jazz, bossa nova, samba. I play 🎷and 🎸
 - Language learning, traveling
 - Sports (🚵‍♂️,⚽,🏀)
