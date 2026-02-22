@@ -1,8 +1,10 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
+import { cn } from "@/lib/utils";
 
 const navLinks = [
   { href: "/", label: "Home" },
@@ -10,17 +12,32 @@ const navLinks = [
 ];
 
 export function Navbar() {
+  const pathname = usePathname();
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
 
-  useEffect(() => setMounted(true), []);
+  useEffect(() => {
+    setMounted(true);
+    const onScroll = () => setScrolled(window.scrollY > 20);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   return (
-    <header className="sticky top-0 z-50 w-full bg-background/80 backdrop-blur-sm">
+    <header
+      className={cn(
+        "fixed top-0 z-50 w-full transition-[background-color,border-color,backdrop-filter] duration-300",
+        mounted && scrolled
+          ? "bg-background/80 backdrop-blur-sm border-b border-border/50"
+          : "bg-transparent border-b border-transparent"
+      )}
+    >
       <nav className="max-w-2xl mx-auto flex h-14 items-center justify-between px-6">
         <Link
           href="/"
-          className="font-mono text-sm font-medium tracking-tight"
+          className="font-mono text-sm font-medium tracking-tight hover:opacity-60 transition-opacity"
         >
           datadiego
         </Link>
@@ -30,7 +47,12 @@ export function Navbar() {
             <Link
               key={link.href}
               href={link.href}
-              className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+              className={cn(
+                "text-sm transition-colors",
+                pathname === link.href
+                  ? "text-foreground"
+                  : "text-muted-foreground hover:text-foreground"
+              )}
             >
               {link.label}
             </Link>
@@ -38,7 +60,7 @@ export function Navbar() {
           {mounted && (
             <button
               onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-              className="text-muted-foreground hover:text-foreground transition-colors"
+              className="text-muted-foreground hover:text-foreground transition-colors active:scale-90"
               aria-label="Toggle theme"
             >
               <svg
