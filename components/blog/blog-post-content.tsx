@@ -122,7 +122,7 @@ export function BlogPostContent({
                 {...props}
                 className="cursor-zoom-in rounded-lg"
                 onClick={() =>
-                  src && setPreviewImage({ src, alt: alt || "" })
+                  typeof src === "string" && setPreviewImage({ src, alt: alt || "" })
                 }
               />
             ),
