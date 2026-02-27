@@ -100,12 +100,11 @@ export function ImageUpload({
       />
 
       {displayUrl ? (
-        <div className="relative group/img inline-block">
+        <div className="relative group/img w-full h-full">
           <img
             src={displayUrl}
             alt="Upload"
-            className={`object-cover border border-border ${shapeClass}`}
-            style={{ width: "100%", height: "100%" }}
+            className={`w-full h-full object-cover border border-border ${shapeClass}`}
           />
           <div
             className={`absolute inset-0 bg-black/50 opacity-0 group-hover/img:opacity-100 transition-opacity flex items-center justify-center gap-1 ${shapeClass}`}
