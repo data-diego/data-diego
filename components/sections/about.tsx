@@ -30,10 +30,9 @@ export function About() {
         </BlurFade>
         <BlurFade delay={0.1}>
           <p className="text-muted-foreground leading-relaxed">
-            Based in Santiago de Chile, I obsess over turning thoughts into
-            tangible, day-to-day products that people actually use. Software,
-            electronics, UX design — whatever it takes to make an idea real.
-            I&apos;m deeply interested in augmented reality and how it will
+            I build software and hardware with great UX design and turn my thoughts into
+            tangible, day-to-day products that people actually use.
+            I&apos;m interested in how augmented reality + AI will
             reshape the way we interact with the world. Creative, enthusiastic,
             and endlessly curious — I&apos;m here to build the future.
           </p>
