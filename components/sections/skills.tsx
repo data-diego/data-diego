@@ -46,8 +46,8 @@ export function Skills() {
         <div className="space-y-4">
           {skills.map((category, i) => (
             <BlurFade key={category._id} delay={0.05 + i * 0.08}>
-              <div className="group/skill flex items-start gap-3 relative">
-                <span className="text-xs font-medium text-muted-foreground w-20 shrink-0 pt-1.5 tabular-nums">
+              <div className="group/skill flex items-center gap-3 relative">
+                <span className="text-xs font-medium text-muted-foreground w-20 shrink-0 tabular-nums">
                   {category.category}
                 </span>
                 <div className="flex flex-wrap gap-1.5 flex-1">

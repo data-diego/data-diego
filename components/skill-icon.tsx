@@ -29,6 +29,7 @@ import {
   SiDjango,
   SiFlask,
   SiLangchain,
+  SiRuby,
 } from "react-icons/si";
 
 function ConvexIcon({ className }: { className?: string }) {
@@ -75,6 +76,7 @@ const iconMap: Record<string, IconType> = {
   django: SiDjango,
   flask: SiFlask,
   langchain: SiLangchain,
+  ruby: SiRuby,
   convex: ConvexIcon as unknown as IconType,
 };
 

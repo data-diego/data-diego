@@ -1,10 +1,16 @@
 "use client";
 
+import { useState } from "react";
 import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import rehypeHighlight from "rehype-highlight";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
+import {
+  Dialog,
+  DialogContent,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import Link from "next/link";
 
 interface BlogPostContentProps {
@@ -26,6 +32,11 @@ export function BlogPostContent({
   coverImageUrl,
   editUrl,
 }: BlogPostContentProps) {
+  const [previewImage, setPreviewImage] = useState<{
+    src: string;
+    alt: string;
+  } | null>(null);
+
   return (
     <article>
       <div className="flex items-center justify-between">
@@ -52,7 +63,8 @@ export function BlogPostContent({
         <img
           src={coverImageUrl}
           alt={title}
-          className="w-full h-48 sm:h-64 object-cover rounded-lg mt-6 border border-border"
+          className="w-full h-48 sm:h-64 object-cover rounded-lg mt-6 border border-border cursor-zoom-in"
+          onClick={() => setPreviewImage({ src: coverImageUrl, alt: title })}
         />
       )}
 
@@ -102,10 +114,44 @@ export function BlogPostContent({
         <Markdown
           remarkPlugins={[remarkGfm]}
           rehypePlugins={[rehypeHighlight]}
+          components={{
+            img: ({ src, alt, ...props }) => (
+              <img
+                src={src}
+                alt={alt || ""}
+                {...props}
+                className="cursor-zoom-in rounded-lg"
+                onClick={() =>
+                  src && setPreviewImage({ src, alt: alt || "" })
+                }
+              />
+            ),
+          }}
         >
           {content}
         </Markdown>
       </div>
+
+      <Dialog
+        open={!!previewImage}
+        onOpenChange={(open) => !open && setPreviewImage(null)}
+      >
+        <DialogContent
+          className="max-w-[90vw] max-h-[90vh] p-2 bg-background/95 backdrop-blur-sm border-border sm:max-w-[90vw]"
+          showCloseButton
+        >
+          <DialogTitle className="sr-only">
+            {previewImage?.alt || "Image preview"}
+          </DialogTitle>
+          {previewImage && (
+            <img
+              src={previewImage.src}
+              alt={previewImage.alt}
+              className="w-full h-full max-h-[85vh] object-contain rounded"
+            />
+          )}
+        </DialogContent>
+      </Dialog>
     </article>
   );
 }
