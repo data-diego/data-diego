@@ -47,8 +47,8 @@ export const listAll = query({
   args: {},
   handler: async (ctx) => {
     const userId = await getAuthUserId(ctx);
-    const posts = await ctx.db.query("posts").order("desc").collect();
     if (!userId) return [];
+    const posts = await ctx.db.query("posts").order("desc").collect();
     return Promise.all(
       posts.map(async (post) => ({
         ...post,

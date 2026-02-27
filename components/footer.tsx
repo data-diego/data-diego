@@ -15,15 +15,6 @@ export function Footer() {
             </a>
             <span className="text-border">|</span>
             <a
-              href="https://linkedin.com/in/datadiego"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hover:text-foreground transition-colors"
-            >
-              LinkedIn
-            </a>
-            <span className="text-border">|</span>
-            <a
               href="https://x.com/datadiego_"
               target="_blank"
               rel="noopener noreferrer"

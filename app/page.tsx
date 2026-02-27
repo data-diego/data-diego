@@ -24,7 +24,6 @@ export default function Home() {
             },
             sameAs: [
               "https://github.com/data-diego",
-              "https://linkedin.com/in/datadiego",
               "https://x.com/datadiego_",
             ],
           }),

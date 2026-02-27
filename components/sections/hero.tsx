@@ -101,14 +101,6 @@ export function Hero() {
                   GitHub
                 </a>
                 <a
-                  href="https://linkedin.com/in/datadiego"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="underline underline-offset-4 decoration-muted-foreground/40 hover:decoration-foreground transition-colors"
-                >
-                  LinkedIn
-                </a>
-                <a
                   href="https://x.com/datadiego_"
                   target="_blank"
                   rel="noopener noreferrer"
