@@ -48,9 +48,9 @@ export function Hero() {
       />
 
       <div className="relative max-w-2xl mx-auto px-6">
-        <div className="flex flex-col sm:flex-row sm:items-center gap-8">
+        <div className="flex flex-col items-center sm:flex-row sm:items-center gap-8">
           {/* Text content */}
-          <div className="flex-1 space-y-4">
+          <div className="flex-1 space-y-4 sm:text-left  sm:items-start flex flex-col">
             <BlurFade>
               <p className="text-xs font-mono text-muted-foreground tracking-wider uppercase">
                 <EncryptedText
@@ -85,7 +85,7 @@ export function Hero() {
             </BlurFade>
 
             <BlurFade delay={0.3}>
-              <div className="flex items-center gap-4 pt-2 text-sm">
+              <div className="flex items-center justify-center sm:justfy-start gap-4 pt-2 text-sm">
                 <Link
                   href="/blog"
                   className="underline underline-offset-4 decoration-muted-foreground/40 hover:decoration-foreground transition-colors"
