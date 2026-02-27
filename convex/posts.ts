@@ -15,7 +15,14 @@ export const listPublished = query({
       .withIndex("by_published", (q) => q.eq("published", true))
       .order("desc")
       .collect();
-    return posts;
+    return Promise.all(
+      posts.map(async (post) => ({
+        ...post,
+        coverImageUrl: post.coverImageId
+          ? await ctx.storage.getUrl(post.coverImageId)
+          : null,
+      }))
+    );
   },
 });
 
@@ -27,7 +34,12 @@ export const getBySlug = query({
       .withIndex("by_slug", (q) => q.eq("slug", args.slug))
       .unique();
     if (!post || !post.published) return null;
-    return post;
+    return {
+      ...post,
+      coverImageUrl: post.coverImageId
+        ? await ctx.storage.getUrl(post.coverImageId)
+        : null,
+    };
   },
 });
 
@@ -37,7 +49,14 @@ export const listAll = query({
     const userId = await getAuthUserId(ctx);
     const posts = await ctx.db.query("posts").order("desc").collect();
     if (!userId) return [];
-    return posts;
+    return Promise.all(
+      posts.map(async (post) => ({
+        ...post,
+        coverImageUrl: post.coverImageId
+          ? await ctx.storage.getUrl(post.coverImageId)
+          : null,
+      }))
+    );
   },
 });
 
@@ -46,7 +65,14 @@ export const getById = query({
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
     if (!userId) return null;
-    return await ctx.db.get(args.id);
+    const post = await ctx.db.get(args.id);
+    if (!post) return null;
+    return {
+      ...post,
+      coverImageUrl: post.coverImageId
+        ? await ctx.storage.getUrl(post.coverImageId)
+        : null,
+    };
   },
 });
 
@@ -58,6 +84,7 @@ export const create = mutation({
     content: v.string(),
     tags: v.array(v.string()),
     published: v.boolean(),
+    coverImageId: v.optional(v.id("_storage")),
   },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
@@ -79,6 +106,7 @@ export const update = mutation({
     content: v.string(),
     tags: v.array(v.string()),
     published: v.boolean(),
+    coverImageId: v.optional(v.id("_storage")),
   },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);

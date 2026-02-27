@@ -5,11 +5,13 @@ import { api } from "@/convex/_generated/api";
 import { BlogPostContent } from "@/components/blog/blog-post-content";
 import { useParams } from "next/navigation";
 import Link from "next/link";
+import { useIsAdmin } from "@/hooks/use-is-admin";
 
 export default function BlogPostPage() {
   const params = useParams();
   const slug = params.slug as string;
   const post = useQuery(api.posts.getBySlug, { slug });
+  const { isAdmin } = useIsAdmin();
 
   if (post === undefined) {
     return (
@@ -66,6 +68,8 @@ export default function BlogPostPage() {
         tags={post.tags}
         publishedAt={post.publishedAt}
         aiSummary={post.aiSummary}
+        coverImageUrl={post.coverImageUrl}
+        editUrl={isAdmin ? `/admin/posts/${post._id}/edit` : undefined}
       />
     </div>
   );

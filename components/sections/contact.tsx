@@ -1,6 +1,8 @@
 "use client";
 
 import { useState } from "react";
+import { useAction } from "convex/react";
+import { api } from "@/convex/_generated/api";
 import { Separator } from "@/components/ui/separator";
 import { BlurFade } from "@/components/blur-fade";
 import { StatefulButton } from "@/components/ui/stateful-button";
@@ -10,10 +12,10 @@ export function Contact() {
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
   const [sent, setSent] = useState(false);
+  const sendContact = useAction(api.contact.send);
 
   const handleSend = async () => {
-    // Simulate sending — replace with actual API call
-    await new Promise((resolve) => setTimeout(resolve, 1500));
+    await sendContact({ name, email, message });
     setSent(true);
     setName("");
     setEmail("");
@@ -74,10 +76,10 @@ export function Contact() {
 
           <div className="mt-6 pt-4 border-t border-border">
             <a
-              href="mailto:diego@datadiego.com"
+              href="mailto:info@datadiego.com"
               className="inline-flex items-center gap-1.5 text-sm underline underline-offset-4 decoration-muted-foreground/40 hover:decoration-foreground transition-colors group"
             >
-              diego@datadiego.com
+              info@datadiego.com
               <svg
                 className="h-3 w-3 text-muted-foreground group-hover:text-foreground group-hover:translate-x-0.5 transition-all"
                 fill="none"

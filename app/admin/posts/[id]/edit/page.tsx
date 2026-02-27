@@ -41,6 +41,8 @@ export default function EditPostPage() {
           tags: post.tags,
           published: post.published,
           aiSummary: post.aiSummary,
+          coverImageId: post.coverImageId,
+          coverImageUrl: post.coverImageUrl,
         }}
       />
     </div>

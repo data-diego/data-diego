@@ -22,6 +22,15 @@ export function Footer() {
             >
               LinkedIn
             </a>
+            <span className="text-border">|</span>
+            <a
+              href="https://x.com/datadiego_"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-foreground transition-colors"
+            >
+              X
+            </a>
           </div>
         </div>
       </div>

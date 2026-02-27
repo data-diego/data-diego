@@ -7,7 +7,6 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
 import { Toaster } from "@/components/ui/sonner";
-import { AiChatButton } from "@/components/ai-chat-button";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -21,7 +20,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   icons: {
-    icon: "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>",
+    icon: "/icon.png",
   },
   title: {
     default: "Diego Valenzuela - Software Engineer",
@@ -67,7 +66,6 @@ export default function RootLayout({
               <Navbar />
               <main className="flex-1 pt-14">{children}</main>
               <Footer />
-              <AiChatButton />
               <Toaster />
             </ConvexClientProvider>
           </ThemeProvider>

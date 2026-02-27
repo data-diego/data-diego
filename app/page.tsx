@@ -1,7 +1,7 @@
 import { Hero } from "@/components/sections/hero";
 import { About } from "@/components/sections/about";
 import { Experience } from "@/components/sections/experience";
-import { Projects } from "@/components/sections/projects";
+import { BlogPreview } from "@/components/sections/blog-preview";
 import { Skills } from "@/components/sections/skills";
 import { Contact } from "@/components/sections/contact";
 
@@ -16,7 +16,7 @@ export default function Home() {
             "@type": "Person",
             name: "Diego Valenzuela",
             url: "https://datadiego.com",
-            jobTitle: "Software Engineer",
+            jobTitle: "Inventor & Indie Hacker",
             address: {
               "@type": "PostalAddress",
               addressLocality: "Santiago",
@@ -25,6 +25,7 @@ export default function Home() {
             sameAs: [
               "https://github.com/datadiego",
               "https://linkedin.com/in/datadiego",
+              "https://x.com/datadiego_",
             ],
           }),
         }}
@@ -32,7 +33,7 @@ export default function Home() {
       <Hero />
       <About />
       <Experience />
-      <Projects />
+      <BlogPreview />
       <Skills />
       <Contact />
     </>

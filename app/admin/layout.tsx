@@ -31,7 +31,16 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
           <h1 className="text-2xl font-bold">Admin</h1>
           <nav className="flex items-center gap-2">
             <Button asChild variant="ghost" size="sm">
-              <Link href="/admin">Posts</Link>
+              <Link href="/admin">Dashboard</Link>
+            </Button>
+            <Button asChild variant="ghost" size="sm">
+              <Link href="/admin/posts">Posts</Link>
+            </Button>
+            <Button asChild variant="ghost" size="sm">
+              <Link href="/admin/experience">Projects</Link>
+            </Button>
+            <Button asChild variant="ghost" size="sm">
+              <Link href="/admin/skills">Skills</Link>
             </Button>
           </nav>
         </div>

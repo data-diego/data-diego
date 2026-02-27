@@ -5,98 +5,44 @@ import { AnimatePresence, motion } from "motion/react";
 import { Separator } from "@/components/ui/separator";
 import { BlurFade } from "@/components/blur-fade";
 import { useOutsideClick } from "@/hooks/use-outside-click";
+import { useQuery } from "convex/react";
+import { api } from "@/convex/_generated/api";
+import { useIsAdmin } from "@/hooks/use-is-admin";
+import { InlineEditExperience } from "@/components/admin/inline-edit-experience";
+import Markdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
-type ExperienceCard = {
-  company: string;
-  role: string;
-  period: string;
-  logo: string;
-  color: string;
-  description: string;
-  content: () => React.ReactNode;
-};
+type ExperienceItem = NonNullable<
+  ReturnType<typeof useQuery<typeof api.experiences.list>>
+>[number];
 
-const experience: ExperienceCard[] = [
-  {
-    company: "Freelance",
-    role: "Full-Stack Engineer",
-    period: "2023 - Present",
-    logo: "F",
-    color: "bg-violet-500",
-    description:
-      "Building web apps and AI integrations for clients across Latin America.",
-    content: () => (
-      <div className="space-y-2 text-sm text-muted-foreground">
-        <p>
-          Working with startups and agencies to deliver full-stack web
-          applications, from initial architecture to deployment and maintenance.
-        </p>
-        <p>
-          Key projects include AI-powered content platforms, real-time
-          dashboards, and e-commerce solutions. Built with React, Next.js,
-          Python, and various cloud services.
-        </p>
-        <p>
-          Focus on clean, maintainable code and delivering high-quality user
-          experiences on tight timelines.
-        </p>
-      </div>
-    ),
-  },
-  {
-    company: "DataCo",
-    role: "Data Engineer",
-    period: "2021 - 2023",
-    logo: "D",
-    color: "bg-blue-500",
-    description:
-      "Designed ETL pipelines and real-time data systems processing millions of events daily.",
-    content: () => (
-      <div className="space-y-2 text-sm text-muted-foreground">
-        <p>
-          Led the design and implementation of data pipelines handling millions
-          of events daily using Apache Kafka, Python, and PostgreSQL.
-        </p>
-        <p>
-          Built real-time analytics dashboards and automated reporting systems
-          that reduced manual work by 80%. Managed data infrastructure on AWS
-          and optimized query performance across multiple databases.
-        </p>
-        <p>
-          Mentored junior engineers and established data engineering best
-          practices across the team.
-        </p>
-      </div>
-    ),
-  },
-  {
-    company: "StartupCL",
-    role: "Software Developer",
-    period: "2019 - 2021",
-    logo: "S",
-    color: "bg-emerald-500",
-    description:
-      "Built core product features and internal tooling for a fast-growing fintech startup.",
-    content: () => (
-      <div className="space-y-2 text-sm text-muted-foreground">
-        <p>
-          Developed core product features for a fintech platform serving
-          thousands of users, including payment processing, user onboarding, and
-          reporting modules.
-        </p>
-        <p>
-          Built internal tooling that improved team productivity and reduced
-          customer support response times. Worked across the full stack with
-          React, Node.js, and PostgreSQL.
-        </p>
-        <p>
-          Participated in product decisions and helped shape the technical
-          roadmap during rapid growth.
-        </p>
-      </div>
-    ),
-  },
-];
+function ExpLogo({
+  exp,
+  size,
+  className = "",
+}: {
+  exp: ExperienceItem;
+  size: "sm" | "lg";
+  className?: string;
+}) {
+  const px = size === "lg" ? "size-12" : "size-10";
+  if (exp.imageUrl) {
+    return (
+      <img
+        src={exp.imageUrl}
+        alt={exp.company}
+        className={`${px} rounded-full object-cover shadow-sm ${size === "sm" ? "ring-2 ring-background" : ""} ${className}`}
+      />
+    );
+  }
+  return (
+    <div
+      className={`${px} rounded-full ${exp.color} flex items-center justify-center text-white text-sm font-bold shadow-sm ${size === "sm" ? "ring-2 ring-background" : ""} ${className}`}
+    >
+      {exp.logo}
+    </div>
+  );
+}
 
 const CloseIcon = () => (
   <motion.svg
@@ -121,7 +67,13 @@ const CloseIcon = () => (
 );
 
 export function Experience() {
-  const [active, setActive] = useState<ExperienceCard | null>(null);
+  const experiences = useQuery(api.experiences.list);
+  const { isAdmin } = useIsAdmin();
+  const [active, setActive] = useState<ExperienceItem | null>(null);
+  const [editingExp, setEditingExp] = useState<ExperienceItem | undefined>(
+    undefined
+  );
+  const [editOpen, setEditOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
   const id = useId();
 
@@ -144,14 +96,38 @@ export function Experience() {
 
   useOutsideClick(ref, () => setActive(null));
 
+  if (!experiences || (experiences.length === 0 && !isAdmin)) return null;
+
   return (
-    <section id="experience" className="pt-12">
+    <section id="projects" className="pt-12">
       <div className="max-w-2xl mx-auto px-6">
         <Separator className="mb-12" />
         <BlurFade>
-          <h2 className="text-xl font-bold tracking-tight mb-6">
-            Work Experience
-          </h2>
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-xl font-bold tracking-tight">
+              Projects
+            </h2>
+            {isAdmin && (
+              <button
+                onClick={() => {
+                  setEditingExp(undefined);
+                  setEditOpen(true);
+                }}
+                className="size-7 rounded-full border border-dashed border-muted-foreground/40 flex items-center justify-center text-muted-foreground/60 hover:border-foreground hover:text-foreground transition-colors"
+              >
+                <svg
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                >
+                  <path d="M12 5v14M5 12h14" />
+                </svg>
+              </button>
+            )}
+          </div>
         </BlurFade>
 
         {/* Expanded overlay */}
@@ -170,7 +146,7 @@ export function Experience() {
           {active ? (
             <div className="fixed inset-0 grid place-items-center z-[100]">
               <motion.button
-                key={`button-${active.company}-${id}`}
+                key={`button-${active._id}-${id}`}
                 layout
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
@@ -181,37 +157,71 @@ export function Experience() {
                 <CloseIcon />
               </motion.button>
               <motion.div
-                layoutId={`card-${active.company}-${id}`}
+                layoutId={`card-${active._id}-${id}`}
                 ref={ref}
                 className="w-full max-w-[500px] h-fit max-h-[90%] flex flex-col bg-background border border-border rounded-2xl overflow-hidden shadow-xl"
               >
-                <div className="p-6">
+                <div className="p-6 overflow-y-auto">
                   <div className="flex items-start gap-4 mb-4">
-                    <motion.div
-                      layoutId={`logo-${active.company}-${id}`}
-                      className={`shrink-0 size-12 rounded-full ${active.color} flex items-center justify-center text-white text-sm font-bold shadow-sm`}
-                    >
-                      {active.logo}
+                    <motion.div layoutId={`logo-${active._id}-${id}`} className="shrink-0">
+                      <ExpLogo exp={active} size="lg" />
                     </motion.div>
                     <div className="flex-1">
                       <motion.h3
-                        layoutId={`title-${active.company}-${id}`}
+                        layoutId={`title-${active._id}-${id}`}
                         className="text-base font-semibold"
                       >
                         {active.company}
                       </motion.h3>
                       <motion.p
-                        layoutId={`role-${active.company}-${id}`}
+                        layoutId={`role-${active._id}-${id}`}
                         className="text-sm text-muted-foreground"
                       >
                         {active.role}
                       </motion.p>
                       <motion.span
-                        layoutId={`period-${active.company}-${id}`}
+                        layoutId={`period-${active._id}-${id}`}
                         className="text-xs text-muted-foreground tabular-nums"
                       >
                         {active.period}
                       </motion.span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      {active.link && (
+                        <a
+                          href={active.link}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          onClick={(e) => e.stopPropagation()}
+                          className="shrink-0 size-7 rounded-full border border-border flex items-center justify-center text-muted-foreground hover:text-foreground hover:border-foreground transition-colors"
+                        >
+                          <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                            <path d="M7 17L17 7M17 7H7M17 7v10" />
+                          </svg>
+                        </a>
+                      )}
+                      {isAdmin && (
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setActive(null);
+                            setEditingExp(active);
+                            setEditOpen(true);
+                          }}
+                          className="shrink-0 size-7 rounded-full border border-border flex items-center justify-center text-muted-foreground hover:text-foreground hover:border-foreground transition-colors"
+                        >
+                          <svg
+                            width="12"
+                            height="12"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                          >
+                            <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" />
+                          </svg>
+                        </button>
+                      )}
                     </div>
                   </div>
                   <motion.div
@@ -221,7 +231,9 @@ export function Experience() {
                     exit={{ opacity: 0 }}
                     className="[scrollbar-width:none]"
                   >
-                    {active.content()}
+                    <div className="prose prose-sm prose-neutral dark:prose-invert max-w-none text-muted-foreground">
+                      <Markdown remarkPlugins={[remarkGfm]}>{active.content}</Markdown>
+                    </div>
                   </motion.div>
                 </div>
               </motion.div>
@@ -231,37 +243,34 @@ export function Experience() {
 
         {/* Card list */}
         <div className="space-y-2">
-          {experience.map((job, i) => (
-            <BlurFade key={job.company} delay={0.05 + i * 0.1}>
+          {experiences.map((job, i) => (
+            <BlurFade key={job._id} delay={0.05 + i * 0.1}>
               <motion.div
-                layoutId={`card-${job.company}-${id}`}
+                layoutId={`card-${job._id}-${id}`}
                 onClick={() => setActive(job)}
-                className="group flex items-center gap-4 p-3 -mx-3 rounded-xl hover:bg-muted/50 cursor-pointer transition-colors"
+                className="group/card flex items-center gap-4 p-3 -mx-3 rounded-xl hover:bg-muted/50 cursor-pointer transition-colors relative"
               >
-                <motion.div
-                  layoutId={`logo-${job.company}-${id}`}
-                  className={`shrink-0 size-10 rounded-full ${job.color} flex items-center justify-center text-white text-sm font-bold shadow-sm ring-2 ring-background`}
-                >
-                  {job.logo}
+                <motion.div layoutId={`logo-${job._id}-${id}`} className="shrink-0">
+                  <ExpLogo exp={job} size="sm" />
                 </motion.div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-baseline justify-between gap-2">
                     <div>
                       <motion.h3
-                        layoutId={`title-${job.company}-${id}`}
+                        layoutId={`title-${job._id}-${id}`}
                         className="text-sm font-semibold"
                       >
                         {job.company}
                       </motion.h3>
                       <motion.p
-                        layoutId={`role-${job.company}-${id}`}
+                        layoutId={`role-${job._id}-${id}`}
                         className="text-sm text-muted-foreground"
                       >
                         {job.role}
                       </motion.p>
                     </div>
                     <motion.span
-                      layoutId={`period-${job.company}-${id}`}
+                      layoutId={`period-${job._id}-${id}`}
                       className="text-xs text-muted-foreground shrink-0 tabular-nums"
                     >
                       {job.period}
@@ -271,20 +280,49 @@ export function Experience() {
                     {job.description}
                   </p>
                 </div>
-                <svg
-                  className="h-4 w-4 shrink-0 text-muted-foreground/40 group-hover:text-muted-foreground transition-colors"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  strokeWidth={2}
-                >
-                  <path d="M9 5l7 7-7 7" />
-                </svg>
+                {isAdmin ? (
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setEditingExp(job);
+                      setEditOpen(true);
+                    }}
+                    className="shrink-0 size-7 rounded-full border border-border flex items-center justify-center text-muted-foreground opacity-0 group-hover/card:opacity-100 hover:text-foreground hover:border-foreground transition-all"
+                  >
+                    <svg
+                      width="12"
+                      height="12"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                    >
+                      <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" />
+                    </svg>
+                  </button>
+                ) : (
+                  <svg
+                    className="h-4 w-4 shrink-0 text-muted-foreground/40 group-hover/card:text-muted-foreground transition-colors"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    strokeWidth={2}
+                  >
+                    <path d="M9 5l7 7-7 7" />
+                  </svg>
+                )}
               </motion.div>
             </BlurFade>
           ))}
         </div>
       </div>
+
+      <InlineEditExperience
+        experience={editingExp}
+        open={editOpen}
+        onOpenChange={setEditOpen}
+        nextOrder={(experiences?.length ?? 0) + 1}
+      />
     </section>
   );
 }

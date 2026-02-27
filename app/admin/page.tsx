@@ -1,104 +1,108 @@
 "use client";
 
+import Link from "next/link";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
-import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import {
   Card,
   CardHeader,
   CardTitle,
   CardDescription,
-  CardContent,
 } from "@/components/ui/card";
 import { toast } from "sonner";
-import type { Doc, Id } from "@/convex/_generated/dataModel";
 
-export default function AdminPage() {
-  const posts = useQuery(api.posts.listAll) as Doc<"posts">[] | undefined;
-  const removePost = useMutation(api.posts.remove);
+const sections = [
+  {
+    title: "Posts",
+    description: "Manage blog posts",
+    href: "/admin/posts",
+  },
+  {
+    title: "Projects",
+    description: "Manage portfolio projects",
+    href: "/admin/experience",
+  },
+  {
+    title: "Skills",
+    description: "Manage skill categories",
+    href: "/admin/skills",
+  },
+];
 
-  const handleDelete = async (id: Id<"posts">, title: string) => {
-    if (!confirm(`Delete "${title}"?`)) return;
-    await removePost({ id });
-    toast.success("Post deleted");
+export default function AdminDashboard() {
+  const posts = useQuery(api.posts.listAll);
+  const experiences = useQuery(api.experiences.list);
+  const skills = useQuery(api.skills.list);
+  const seed = useMutation(api.seed.run);
+  const seedPosts = useMutation(api.seed.seedPosts);
+
+  const counts: Record<string, number | undefined> = {
+    Posts: posts?.length,
+    Projects: experiences?.length,
+    Skills: skills?.length,
   };
 
-  if (posts === undefined) {
-    return (
-      <div className="space-y-4">
-        {[1, 2, 3].map((i) => (
-          <div key={i} className="h-24 rounded-lg bg-muted animate-pulse" />
-        ))}
-      </div>
-    );
-  }
+  const isEmpty =
+    (experiences?.length ?? 0) === 0 &&
+    (skills?.length ?? 0) === 0;
+
+  const noPosts = (posts?.length ?? 0) === 0;
+
+  const handleSeed = async () => {
+    try {
+      await seed();
+      toast.success("Dummy data seeded!");
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Failed to seed");
+    }
+  };
+
+  const handleSeedPosts = async () => {
+    try {
+      const result = await seedPosts();
+      toast.success(result);
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Failed to seed posts");
+    }
+  };
 
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
-        <h2 className="text-xl font-semibold">Posts</h2>
-        <Button asChild>
-          <Link href="/admin/posts/new">New post</Link>
-        </Button>
-      </div>
-
-      {posts.length === 0 ? (
-        <Card>
-          <CardContent className="py-12 text-center">
-            <p className="text-muted-foreground mb-4">No posts yet.</p>
-            <Button asChild>
-              <Link href="/admin/posts/new">Create your first post</Link>
+        <h2 className="text-xl font-semibold">Dashboard</h2>
+        <div className="flex gap-2">
+          {isEmpty && (
+            <Button variant="outline" size="sm" onClick={() => void handleSeed()}>
+              Seed dummy data
             </Button>
-          </CardContent>
-        </Card>
-      ) : (
-        <div className="space-y-3">
-          {posts.map((post) => (
-            <Card key={post._id}>
-              <CardHeader className="pb-3">
+          )}
+          {noPosts && (
+            <Button variant="outline" size="sm" onClick={() => void handleSeedPosts()}>
+              Seed blog posts
+            </Button>
+          )}
+        </div>
+      </div>
+      <div className="grid gap-4 sm:grid-cols-2">
+        {sections.map((s) => (
+          <Link key={s.href} href={s.href}>
+            <Card className="hover:bg-muted/50 transition-colors cursor-pointer">
+              <CardHeader>
                 <div className="flex items-center justify-between">
-                  <div className="space-y-1">
-                    <div className="flex items-center gap-2">
-                      <CardTitle className="text-base">
-                        {post.title}
-                      </CardTitle>
-                      <Badge
-                        variant={post.published ? "default" : "secondary"}
-                      >
-                        {post.published ? "Published" : "Draft"}
-                      </Badge>
-                    </div>
-                    <CardDescription className="text-xs">
-                      /{post.slug}
-                      {post.publishedAt && (
-                        <>
-                          {" "}
-                          &middot;{" "}
-                          {new Date(post.publishedAt).toLocaleDateString()}
-                        </>
-                      )}
-                    </CardDescription>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Button asChild variant="outline" size="sm">
-                      <Link href={`/admin/posts/${post._id}/edit`}>Edit</Link>
-                    </Button>
-                    <Button
-                      variant="destructive"
-                      size="sm"
-                      onClick={() => void handleDelete(post._id, post.title)}
-                    >
-                      Delete
-                    </Button>
-                  </div>
+                  <CardTitle className="text-base">{s.title}</CardTitle>
+                  {counts[s.title] !== undefined && (
+                    <span className="text-sm text-muted-foreground tabular-nums">
+                      {counts[s.title]} items
+                    </span>
+                  )}
                 </div>
+                <CardDescription>{s.description}</CardDescription>
               </CardHeader>
             </Card>
-          ))}
-        </div>
-      )}
+          </Link>
+        ))}
+      </div>
     </div>
   );
 }

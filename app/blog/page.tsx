@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import { BlogList } from "@/components/blog/blog-list";
+import { Suspense } from "react";
+import { BlogPageContent } from "./blog-page-content";
 
 export const metadata: Metadata = {
   title: "Blog",
@@ -9,12 +10,18 @@ export const metadata: Metadata = {
 
 export default function BlogPage() {
   return (
-    <div className="max-w-2xl mx-auto px-6 py-16">
-      <h1 className="text-lg font-semibold tracking-tight mb-1">Blog</h1>
-      <p className="text-sm text-muted-foreground mb-8">
-        Thoughts on software, AI, and technology.
-      </p>
-      <BlogList />
+    <div className="max-w-3xl mx-auto px-6 py-16">
+      <Suspense
+        fallback={
+          <div className="space-y-4">
+            <div className="h-6 w-24 bg-muted animate-pulse rounded" />
+            <div className="h-4 w-64 bg-muted animate-pulse rounded" />
+            <div className="h-16 bg-muted animate-pulse rounded" />
+          </div>
+        }
+      >
+        <BlogPageContent />
+      </Suspense>
     </div>
   );
 }

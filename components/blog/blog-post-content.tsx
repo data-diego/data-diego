@@ -13,6 +13,8 @@ interface BlogPostContentProps {
   tags: string[];
   publishedAt?: number;
   aiSummary?: string;
+  coverImageUrl?: string | null;
+  editUrl?: string;
 }
 
 export function BlogPostContent({
@@ -21,15 +23,38 @@ export function BlogPostContent({
   tags,
   publishedAt,
   aiSummary,
+  coverImageUrl,
+  editUrl,
 }: BlogPostContentProps) {
   return (
     <article>
-      <Link
-        href="/blog"
-        className="text-xs text-muted-foreground hover:text-foreground transition-colors"
-      >
-        &larr; Back
-      </Link>
+      <div className="flex items-center justify-between">
+        <Link
+          href="/blog"
+          className="text-xs text-muted-foreground hover:text-foreground transition-colors"
+        >
+          &larr; Back
+        </Link>
+        {editUrl && (
+          <Link
+            href={editUrl}
+            className="inline-flex items-center gap-1.5 rounded-md border border-border px-2.5 py-1 text-xs font-medium text-muted-foreground hover:text-foreground hover:border-foreground transition-colors"
+          >
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" />
+            </svg>
+            Edit
+          </Link>
+        )}
+      </div>
+
+      {coverImageUrl && (
+        <img
+          src={coverImageUrl}
+          alt={title}
+          className="w-full h-48 sm:h-64 object-cover rounded-lg mt-6 border border-border"
+        />
+      )}
 
       <header className="mt-6 mb-8 space-y-3">
         {publishedAt && (

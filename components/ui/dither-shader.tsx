@@ -1,5 +1,6 @@
 "use client";
 import React, { useEffect, useRef, useCallback, useState } from "react";
+import { useTheme } from "next-themes";
 import { cn } from "@/lib/utils";
 
 type DitheringMode = "bayer" | "halftone" | "noise" | "crosshatch";
@@ -22,6 +23,7 @@ interface DitherShaderProps {
   threshold?: number;
   animated?: boolean;
   animationSpeed?: number;
+  darkInvert?: boolean;
   className?: string;
 }
 
@@ -91,8 +93,11 @@ export const DitherShader: React.FC<DitherShaderProps> = ({
   threshold = 0.5,
   animated = false,
   animationSpeed = 0.02,
+  darkInvert = false,
   className,
 }) => {
+  const { resolvedTheme } = useTheme();
+  const isDark = resolvedTheme === "dark";
   const containerRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const animationRef = useRef<number | null>(null);
@@ -244,7 +249,8 @@ export const DitherShader: React.FC<DitherShaderProps> = ({
             }
           }
 
-          if (invert) {
+          const shouldInvert = invert !== (darkInvert && isDark);
+          if (shouldInvert) {
             outputColor = [
               255 - outputColor[0],
               255 - outputColor[1],
@@ -270,6 +276,8 @@ export const DitherShader: React.FC<DitherShaderProps> = ({
       contrast,
       backgroundColor,
       threshold,
+      darkInvert,
+      isDark,
     ]
   );
 

@@ -10,8 +10,14 @@
 
 import type * as ai from "../ai.js";
 import type * as auth from "../auth.js";
+import type * as contact from "../contact.js";
+import type * as experiences from "../experiences.js";
+import type * as files from "../files.js";
 import type * as http from "../http.js";
 import type * as posts from "../posts.js";
+import type * as projects from "../projects.js";
+import type * as seed from "../seed.js";
+import type * as skills from "../skills.js";
 
 import type {
   ApiFromModules,
@@ -22,8 +28,14 @@ import type {
 declare const fullApi: ApiFromModules<{
   ai: typeof ai;
   auth: typeof auth;
+  contact: typeof contact;
+  experiences: typeof experiences;
+  files: typeof files;
   http: typeof http;
   posts: typeof posts;
+  projects: typeof projects;
+  seed: typeof seed;
+  skills: typeof skills;
 }>;
 
 /**

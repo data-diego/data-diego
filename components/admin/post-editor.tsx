@@ -8,12 +8,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { ImageUpload } from "@/components/admin/image-upload";
+import { RichTextEditor } from "@/components/admin/rich-text-editor";
 import { toast } from "sonner";
-import Markdown from "react-markdown";
-import remarkGfm from "remark-gfm";
 import type { Id } from "@/convex/_generated/dataModel";
 
 function slugify(text: string) {
@@ -35,6 +33,8 @@ interface PostEditorProps {
     tags: string[];
     published: boolean;
     aiSummary?: string;
+    coverImageId?: Id<"_storage">;
+    coverImageUrl?: string | null;
   };
 }
 
@@ -52,6 +52,12 @@ export function PostEditor({ initialData }: PostEditorProps) {
     initialData?.tags.join(", ") ?? ""
   );
   const [published, setPublished] = useState(initialData?.published ?? false);
+  const [coverImageId, setCoverImageId] = useState<Id<"_storage"> | undefined>(
+    initialData?.coverImageId
+  );
+  const [coverImageUrl, setCoverImageUrl] = useState<string | null>(
+    initialData?.coverImageUrl ?? null
+  );
   const [saving, setSaving] = useState(false);
   const [generatingSummary, setGeneratingSummary] = useState(false);
 
@@ -84,12 +90,21 @@ export function PostEditor({ initialData }: PostEditorProps) {
           content,
           tags,
           published,
+          coverImageId,
         });
         toast.success("Post updated");
       } else {
-        await createPost({ title, slug, excerpt, content, tags, published });
+        await createPost({
+          title,
+          slug,
+          excerpt,
+          content,
+          tags,
+          published,
+          coverImageId,
+        });
         toast.success("Post created");
-        router.push("/admin");
+        router.push("/admin/posts");
       }
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "Failed to save");
@@ -122,6 +137,23 @@ export function PostEditor({ initialData }: PostEditorProps) {
   return (
     <div className="space-y-6">
       <div className="grid gap-4">
+        <div className="grid gap-2">
+          <Label>Cover image</Label>
+          <ImageUpload
+            currentImageUrl={coverImageUrl}
+            currentStorageId={coverImageId}
+            onUploaded={(id) => {
+              setCoverImageId(id);
+              setCoverImageUrl(null);
+            }}
+            onRemoved={() => {
+              setCoverImageId(undefined);
+              setCoverImageUrl(null);
+            }}
+            className="w-full h-48"
+          />
+        </div>
+
         <div className="grid gap-2">
           <Label htmlFor="title">Title</Label>
           <Input
@@ -177,35 +209,15 @@ export function PostEditor({ initialData }: PostEditorProps) {
         </div>
 
         <div className="grid gap-2">
-          <Label>Content (Markdown)</Label>
-          <Tabs defaultValue="write">
-            <TabsList>
-              <TabsTrigger value="write">Write</TabsTrigger>
-              <TabsTrigger value="preview">Preview</TabsTrigger>
-            </TabsList>
-            <TabsContent value="write">
-              <Textarea
-                value={content}
-                onChange={(e) => setContent(e.target.value)}
-                placeholder="Write your post content in Markdown..."
-                rows={20}
-                className="font-mono text-sm"
-              />
-            </TabsContent>
-            <TabsContent value="preview">
-              <Card>
-                <CardContent className="pt-6 prose prose-neutral dark:prose-invert max-w-none">
-                  {content ? (
-                    <Markdown remarkPlugins={[remarkGfm]}>{content}</Markdown>
-                  ) : (
-                    <p className="text-muted-foreground">
-                      Nothing to preview yet.
-                    </p>
-                  )}
-                </CardContent>
-              </Card>
-            </TabsContent>
-          </Tabs>
+          <Label>Content</Label>
+          <RichTextEditor
+            content={content}
+            onChange={setContent}
+            placeholder="Write your post content..."
+          />
+          <p className="text-xs text-muted-foreground">
+            Drop or paste images directly into the editor. Content is stored as Markdown.
+          </p>
         </div>
       </div>
 
@@ -232,7 +244,7 @@ export function PostEditor({ initialData }: PostEditorProps) {
           )}
         </div>
         <div className="flex items-center gap-2">
-          <Button variant="outline" onClick={() => router.push("/admin")}>
+          <Button variant="outline" onClick={() => router.push("/admin/posts")}>
             Cancel
           </Button>
           <Button onClick={() => void handleSave()} disabled={saving}>

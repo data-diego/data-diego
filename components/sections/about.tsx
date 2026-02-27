@@ -30,21 +30,12 @@ export function About() {
         </BlurFade>
         <BlurFade delay={0.1}>
           <p className="text-muted-foreground leading-relaxed">
-            I&apos;m a software engineer based in Santiago de Chile, focused on
-            building full-stack applications and AI-powered tools. In the past, I{" "}
-            <InlineLink href="https://github.com/datadiego">
-              built open source developer tools
-            </InlineLink>
-            ,{" "}
-            <InlineLink href="https://linkedin.com/in/datadiego">
-              worked at startups across Latin America
-            </InlineLink>
-            , and{" "}
-            <InlineLink href="https://github.com/datadiego">
-              contributed to data engineering platforms
-            </InlineLink>
-            . I enjoy turning complex problems into clean, elegant solutions
-            and writing about what I learn along the way.
+            Based in Santiago de Chile, I obsess over turning thoughts into
+            tangible, day-to-day products that people actually use. Software,
+            electronics, UX design — whatever it takes to make an idea real.
+            I&apos;m deeply interested in augmented reality and how it will
+            reshape the way we interact with the world. Creative, enthusiastic,
+            and endlessly curious — I&apos;m here to build the future.
           </p>
         </BlurFade>
       </div>
