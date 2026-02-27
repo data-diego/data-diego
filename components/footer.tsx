@@ -6,7 +6,7 @@ export function Footer() {
           <p>&copy; {new Date().getFullYear()} Diego Valenzuela</p>
           <div className="flex items-center gap-3">
             <a
-              href="https://github.com/datadiego"
+              href="https://github.com/data-diego"
               target="_blank"
               rel="noopener noreferrer"
               className="hover:text-foreground transition-colors"

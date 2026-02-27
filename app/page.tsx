@@ -23,7 +23,7 @@ export default function Home() {
               addressCountry: "CL",
             },
             sameAs: [
-              "https://github.com/datadiego",
+              "https://github.com/data-diego",
               "https://linkedin.com/in/datadiego",
               "https://x.com/datadiego_",
             ],

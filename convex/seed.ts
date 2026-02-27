@@ -58,7 +58,7 @@ export const run = mutation({
       description:
         "Personal website and blog with AI-powered chat and blog summaries.",
       technologies: ["Next.js", "Convex", "Tailwind CSS", "OpenRouter"],
-      link: "https://github.com/datadiego/datadiego.com",
+      link: "https://github.com/data-diego/datadiego.com",
       image:
         "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=600&h=340&fit=crop&q=80",
       color: "from-violet-500/20 to-violet-500/5",
@@ -70,7 +70,7 @@ export const run = mutation({
       description:
         "Tools for building and managing ETL, streaming, and batch processing pipelines.",
       technologies: ["Python", "Kafka", "PostgreSQL", "Docker"],
-      link: "https://github.com/datadiego",
+      link: "https://github.com/data-diego",
       image:
         "https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=600&h=340&fit=crop&q=80",
       color: "from-blue-500/20 to-blue-500/5",
@@ -82,7 +82,7 @@ export const run = mutation({
       description:
         "Intelligent code review and generation assistant powered by LLMs.",
       technologies: ["TypeScript", "OpenAI", "VS Code API", "Node.js"],
-      link: "https://github.com/datadiego",
+      link: "https://github.com/data-diego",
       image:
         "https://images.unsplash.com/photo-1677442136019-21780ecad995?w=600&h=340&fit=crop&q=80",
       color: "from-emerald-500/20 to-emerald-500/5",
