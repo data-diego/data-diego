@@ -145,44 +145,86 @@ export function Hero() {
       </div>
 
       {/* Contact modal */}
+      {/* Contact modal overlay */}
       <AnimatePresence>
         {contactOpen && (
-          <>
-            <motion.div
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/20 h-full w-full z-10"
+          />
+        )}
+      </AnimatePresence>
+
+      {/* Contact modal card */}
+      <AnimatePresence>
+        {contactOpen && (
+          <div className="fixed inset-0 grid place-items-center z-[100]">
+            <motion.button
+              layout
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="fixed inset-0 bg-black/20 z-10"
-            />
-            <div className="fixed inset-0 grid place-items-center z-[100] p-4">
-              <motion.div
-                ref={modalRef}
-                initial={{ opacity: 0, scale: 0.95, y: 10 }}
-                animate={{ opacity: 1, scale: 1, y: 0 }}
-                exit={{ opacity: 0, scale: 0.95, y: 10 }}
-                transition={{ duration: 0.2 }}
-                className="w-full max-w-[500px] max-h-[90vh] flex flex-col bg-background border border-border rounded-2xl overflow-hidden shadow-xl"
+              exit={{ opacity: 0, transition: { duration: 0.05 } }}
+              className="flex absolute top-4 right-4 lg:hidden items-center justify-center bg-background rounded-full h-8 w-8 border border-border"
+              onClick={() => { setContactOpen(false); setSent(false); }}
+            >
+              <svg
+                className="h-4 w-4 text-foreground"
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
               >
-                <div className="p-6 space-y-4">
-                  <div className="flex items-center justify-between">
-                    <h3 className="text-base font-semibold">Get in touch</h3>
-                    <button
-                      onClick={() => { setContactOpen(false); setSent(false); }}
-                      className="size-8 rounded-full border border-border flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors"
-                    >
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <path d="M18 6l-12 12" />
-                        <path d="M6 6l12 12" />
-                      </svg>
-                    </button>
+                <path d="M18 6l-12 12" />
+                <path d="M6 6l12 12" />
+              </svg>
+            </motion.button>
+            <motion.div
+              ref={modalRef}
+              initial={{ opacity: 0, scale: 0.95, y: 10 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 10 }}
+              transition={{ duration: 0.2 }}
+              className="w-full max-w-[500px] h-fit max-h-[90%] flex flex-col bg-background border border-border rounded-2xl overflow-hidden shadow-xl"
+            >
+              <div className="p-6 overflow-y-auto">
+                <div className="flex items-start gap-4 mb-4">
+                  <div className="shrink-0 size-12 rounded-full bg-foreground flex items-center justify-center text-background text-sm font-bold shadow-sm">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <rect width="20" height="16" x="2" y="4" rx="2" />
+                      <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
+                    </svg>
                   </div>
+                  <div className="flex-1">
+                    <h3 className="text-base font-semibold">Get in touch</h3>
+                    <p className="text-sm text-muted-foreground">Send me a message</p>
+                  </div>
+                </div>
 
-                  {sent ? (
-                    <div className="py-8 text-center space-y-2">
-                      <p className="text-sm font-semibold">Message sent!</p>
-                      <p className="text-sm text-muted-foreground">I&apos;ll get back to you soon.</p>
-                    </div>
-                  ) : (
+                {sent ? (
+                  <motion.div
+                    layout
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    className="py-8 text-center space-y-2"
+                  >
+                    <p className="text-sm font-semibold">Message sent!</p>
+                    <p className="text-sm text-muted-foreground">I&apos;ll get back to you soon.</p>
+                  </motion.div>
+                ) : (
+                  <motion.div
+                    layout
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                  >
                     <form
                       onSubmit={async (e) => {
                         e.preventDefault();
@@ -249,11 +291,11 @@ export function Hero() {
                         {sending ? "Sending..." : "Send message"}
                       </button>
                     </form>
-                  )}
-                </div>
-              </motion.div>
-            </div>
-          </>
+                  </motion.div>
+                )}
+              </div>
+            </motion.div>
+          </div>
         )}
       </AnimatePresence>
     </section>
