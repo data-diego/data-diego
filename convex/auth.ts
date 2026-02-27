@@ -13,7 +13,7 @@ function getAllowedEmails(): string[] {
 export const { auth, signIn, signOut, store, isAuthenticated } = convexAuth({
   providers: [
     Resend({
-      from: "DataDiego <noreply@datadiego.com>",
+      from: "DataDiego <mailer@datadiego.com>",
       async sendVerificationRequest({ identifier, url, provider }) {
         const allowed = getAllowedEmails();
         if (!allowed.includes(identifier.toLowerCase())) {

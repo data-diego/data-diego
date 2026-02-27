@@ -14,7 +14,7 @@ export const send = action({
     const resend = new Resend(process.env.RESEND_API_KEY);
 
     await resend.emails.send({
-      from: "Contact Form <noreply@datadiego.com>",
+      from: "Contact Form <mailer@datadiego.com>",
       to: "info@datadiego.com",
       replyTo: email,
       subject: `Contact from ${name}`,
