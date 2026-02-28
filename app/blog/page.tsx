@@ -6,6 +6,7 @@ export const metadata: Metadata = {
   title: "Blog",
   description:
     "Articles about software engineering, AI, and technology by Diego Valenzuela.",
+  alternates: { canonical: "https://datadiego.com/blog" },
 };
 
 export default function BlogPage() {

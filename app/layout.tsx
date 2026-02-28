@@ -44,6 +44,11 @@ export const metadata: Metadata = {
     description:
       "Software engineer based in Santiago de Chile. Building things with code.",
   },
+  alternates: {
+    types: {
+      "application/rss+xml": "https://datadiego.com/feed.xml",
+    },
+  },
   robots: {
     index: true,
     follow: true,

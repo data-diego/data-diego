@@ -1,41 +1,63 @@
-"use client";
-
-import { useQuery } from "convex/react";
+import type { Metadata } from "next";
+import { notFound } from "next/navigation";
+import { fetchQuery } from "convex/nextjs";
 import { api } from "@/convex/_generated/api";
-import { BlogPostContent } from "@/components/blog/blog-post-content";
-import { useParams } from "next/navigation";
-import Link from "next/link";
-import { useIsAdmin } from "@/hooks/use-is-admin";
+import { BlogPostPageContent } from "./blog-post-page-content";
 
-export default function BlogPostPage() {
-  const params = useParams();
-  const slug = params.slug as string;
-  const post = useQuery(api.posts.getBySlug, { slug });
-  const { isAdmin } = useIsAdmin();
+const BASE_URL = "https://datadiego.com";
 
-  if (post === undefined) {
-    return (
-      <div className="max-w-2xl mx-auto px-6 py-16 space-y-4">
-        <div className="h-4 w-24 bg-muted animate-pulse rounded" />
-        <div className="h-8 w-3/4 bg-muted animate-pulse rounded" />
-        <div className="h-64 bg-muted animate-pulse rounded" />
-      </div>
-    );
-  }
+export const revalidate = 3600;
 
-  if (post === null) {
-    return (
-      <div className="max-w-2xl mx-auto px-6 py-16">
-        <p className="text-sm text-muted-foreground mb-4">Post not found.</p>
-        <Link
-          href="/blog"
-          className="text-sm underline underline-offset-4 decoration-muted-foreground/40 hover:decoration-foreground transition-colors"
-        >
-          Back to blog
-        </Link>
-      </div>
-    );
-  }
+export async function generateStaticParams() {
+  const posts = await fetchQuery(api.posts.listPublished, {});
+  return posts.map((post) => ({ slug: post.slug }));
+}
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const { slug } = await params;
+  const post = await fetchQuery(api.posts.getBySlug, { slug });
+
+  if (!post) return {};
+
+  const title = post.title;
+  const description = post.excerpt;
+  const url = `${BASE_URL}/blog/${slug}`;
+
+  return {
+    title,
+    description,
+    alternates: { canonical: url },
+    openGraph: {
+      title,
+      description,
+      url,
+      type: "article",
+      publishedTime: post.publishedAt
+        ? new Date(post.publishedAt).toISOString()
+        : undefined,
+      tags: post.tags,
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+    },
+  };
+}
+
+export default async function BlogPostPage({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}) {
+  const { slug } = await params;
+  const post = await fetchQuery(api.posts.getBySlug, { slug });
+
+  if (!post) notFound();
 
   return (
     <div className="max-w-2xl mx-auto px-6 py-16">
@@ -53,24 +75,20 @@ export default function BlogPostPage() {
             author: {
               "@type": "Person",
               name: "Diego Valenzuela",
-              url: "https://datadiego.com",
+              url: BASE_URL,
             },
             publisher: {
               "@type": "Person",
               name: "Diego Valenzuela",
             },
+            mainEntityOfPage: {
+              "@type": "WebPage",
+              "@id": `${BASE_URL}/blog/${slug}`,
+            },
           }),
         }}
       />
-      <BlogPostContent
-        title={post.title}
-        content={post.content}
-        tags={post.tags}
-        publishedAt={post.publishedAt}
-        aiSummary={post.aiSummary}
-        coverImageUrl={post.coverImageUrl}
-        editUrl={isAdmin ? `/admin/posts/${post._id}/edit` : undefined}
-      />
+      <BlogPostPageContent slug={slug} />
     </div>
   );
 }
