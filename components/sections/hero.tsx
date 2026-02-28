@@ -79,7 +79,7 @@ export function Hero() {
 
             <BlurFade delay={0.2}>
               <p className="text-muted-foreground leading-relaxed max-w-lg">
-                I translate ideas into real products people use every day —
+                I translate ideas into real products people use every day,
                 from code and electronics to design and user experience.
               </p>
             </BlurFade>

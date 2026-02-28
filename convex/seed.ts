@@ -215,7 +215,7 @@ One guy about to graduate as a designer wanted to make his designs about an app 
 
 I was just learning how to develop apps and decided to develop it as a way of practice.
 
-After some redesigns the app turned out very well — we even deployed it to the [Play Store](https://play.google.com/store/apps/details?id=com.recuper.glunote). Although it never had a backend so it just did basic calculations.
+After some redesigns the app turned out very well, we even deployed it to the [Play Store](https://play.google.com/store/apps/details?id=com.recuper.glunote). Although it never had a backend so it just did basic calculations.
 
 The most valuable lesson was the practice I got with implementing professional designs for a realistic use case.`,
         tags: ["Flutter", "Dart", "Mobile", "UI/UX"],
@@ -282,7 +282,7 @@ I developed several projects as a freelance fullstack developer for many months,
         title: "Powerfinder",
         slug: "powerfinder",
         excerpt:
-          "Semantic search for your data — a RAG pipeline with contextual retrieval and vectorized knowledge bases.",
+          "Semantic search for your data, a RAG pipeline with contextual retrieval and vectorized knowledge bases.",
         content: `Developed Powerfinder: Semantic search for your data.
 
 The project featured a RAG pipeline that allowed businesses to upload thousands of files in knowledge bases that are enhanced using [contextual retrieval](https://www.anthropic.com/engineering/contextual-retrieval) through workers and then vectorized to later be retrieved in the searches and cited accordingly using highlights in the text. Businesses can also subscribe to public knowledge bases built by Powerfinder.
@@ -298,7 +298,7 @@ Live at [https://app.powerlens.ai/powerfinder](https://app.powerlens.ai/powerfin
         title: "Grupalia",
         slug: "grupalia",
         excerpt:
-          "Developing the neobank for the SMEs of Latin America — group credit, fast, reliable, and easy.",
+          "Developing the neobank for the SMEs of Latin America, group credit, fast, reliable, and easy.",
         content: `Developing the neobank for the SMEs of Latam.
 
 Crédito grupal. Rápido, confiable, y fácil.

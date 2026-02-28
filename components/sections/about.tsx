@@ -34,7 +34,7 @@ export function About() {
             tangible, day-to-day products that people actually use.
             I&apos;m interested in how augmented reality + AI will
             reshape the way we interact with the world. Creative, enthusiastic,
-            and endlessly curious — I&apos;m here to build the future.
+            and endlessly curious. I&apos;m here to build the future.
           </p>
         </BlurFade>
       </div>
