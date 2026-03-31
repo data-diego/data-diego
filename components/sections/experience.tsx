@@ -245,10 +245,11 @@ export function Experience() {
         <div className="space-y-2">
           {experiences.map((job, i) => (
             <BlurFade key={job._id} delay={0.05 + i * 0.1}>
-              <motion.div
+              <motion.button
+                type="button"
                 layoutId={`card-${job._id}-${id}`}
                 onClick={() => setActive(job)}
-                className="group/card flex items-center gap-4 p-3 -mx-3 rounded-xl hover:bg-muted/50 cursor-pointer transition-colors relative"
+                className="group/card flex items-center gap-4 p-3 -mx-3 rounded-xl hover:bg-muted/50 cursor-pointer transition-colors relative w-full text-left"
               >
                 <motion.div layoutId={`logo-${job._id}-${id}`} className="shrink-0">
                   <ExpLogo exp={job} size="sm" />
@@ -311,7 +312,7 @@ export function Experience() {
                     <path d="M9 5l7 7-7 7" />
                   </svg>
                 )}
-              </motion.div>
+              </motion.button>
             </BlurFade>
           ))}
         </div>
