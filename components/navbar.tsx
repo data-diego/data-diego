@@ -12,7 +12,7 @@ const navLinks = [
 
 export function Navbar() {
   const pathname = usePathname();
-  const { theme, setTheme } = useTheme();
+  const { resolvedTheme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
@@ -58,7 +58,7 @@ export function Navbar() {
           ))}
           {mounted && (
             <button
-              onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+              onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
               className="text-muted-foreground hover:text-foreground transition-colors active:scale-90"
               aria-label="Toggle theme"
             >
