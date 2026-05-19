@@ -71,7 +71,6 @@ export function Hero() {
                     revealDelayMs={80}
                     flipDelayMs={40}
                     encryptedClassName="text-muted-foreground/40"
-                    revealedClassName="bg-gradient-to-r from-foreground via-foreground/80 to-muted-foreground bg-clip-text text-transparent"
                   />
                 </span>
               </h1>
@@ -120,7 +119,7 @@ export function Hero() {
 
           {/* Dither shader portrait */}
           <BlurFade delay={0.15}>
-            <div className="shrink-0 w-40 h-40 sm:w-48 sm:h-48 rounded-2xl overflow-hidden">
+            <div className="shrink-0 w-40 h-40 sm:w-48 sm:h-48">
               <DitherShader
                 src="/profile.png"
                 gridSize={3}
@@ -129,6 +128,7 @@ export function Hero() {
                 contrast={1.2}
                 brightness={0.05}
                 darkInvert
+                transparentBackground
                 className="h-full w-full"
               />
             </div>

@@ -24,6 +24,7 @@ interface DitherShaderProps {
   animated?: boolean;
   animationSpeed?: number;
   darkInvert?: boolean;
+  transparentBackground?: boolean;
   className?: string;
 }
 
@@ -94,6 +95,7 @@ export const DitherShader: React.FC<DitherShaderProps> = ({
   animated = false,
   animationSpeed = 0.02,
   darkInvert = false,
+  transparentBackground = false,
   className,
 }) => {
   const { resolvedTheme } = useTheme();
@@ -205,11 +207,13 @@ export const DitherShader: React.FC<DitherShaderProps> = ({
           switch (colorMode) {
             case "grayscale": {
               const shouldBeDark = luminance < ditherThreshold;
+              if (transparentBackground && !shouldBeDark) continue;
               outputColor = shouldBeDark ? [0, 0, 0] : [255, 255, 255];
               break;
             }
             case "duotone": {
               const shouldBeDark = luminance < ditherThreshold;
+              if (transparentBackground && !shouldBeDark) continue;
               outputColor = shouldBeDark
                 ? parsedPrimaryColor
                 : parsedSecondaryColor;
@@ -278,6 +282,7 @@ export const DitherShader: React.FC<DitherShaderProps> = ({
       threshold,
       darkInvert,
       isDark,
+      transparentBackground,
     ]
   );
 
