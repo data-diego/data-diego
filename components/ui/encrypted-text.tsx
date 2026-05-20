@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { cn } from "@/lib/utils";
 
 type EncryptedTextProps = {
@@ -30,16 +30,17 @@ export const EncryptedText: React.FC<EncryptedTextProps> = ({
   revealedClassName,
 }) => {
   const ref = useRef<HTMLSpanElement>(null);
-  const [mounted, setMounted] = useState(false);
+  const mounted = useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false
+  );
   const [revealCount, setRevealCount] = useState<number>(0);
   const [scrambleChars, setScrambleChars] = useState<string[]>([]);
   const animationFrameRef = useRef<number | null>(null);
   const startTimeRef = useRef<number>(0);
   const lastFlipTimeRef = useRef<number>(0);
   const scrambleRef = useRef<string[]>([]);
-
-  // Mount guard — render plain text on server, scramble on client
-  useEffect(() => setMounted(true), []);
 
   useEffect(() => {
     if (!mounted) return;
