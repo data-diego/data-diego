@@ -111,7 +111,7 @@ export const run = mutation({
     });
     await ctx.db.insert("skills", {
       category: "Data & AI",
-      items: ["PostgreSQL", "Redis", "OpenAI", "LangChain"],
+      items: ["PostgreSQL", "Redis", "Agentic Workflows", "LangChain"],
       slug: "data-ai",
       order: 4,
     });
