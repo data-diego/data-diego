@@ -99,7 +99,8 @@ export const DitherShader: React.FC<DitherShaderProps> = ({
   className,
 }) => {
   const { resolvedTheme } = useTheme();
-  const isDark = resolvedTheme === "dark";
+  // Glass is a dark-based theme, so the portrait should invert (go light) just like dark.
+  const isDark = resolvedTheme === "dark" || resolvedTheme === "glass";
   const containerRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const animationRef = useRef<number | null>(null);

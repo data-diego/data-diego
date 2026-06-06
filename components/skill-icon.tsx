@@ -15,7 +15,6 @@ import {
   SiLinux,
   SiJavascript,
   SiRust,
-  SiAmazonwebservices,
   SiGooglecloud,
   SiKubernetes,
   SiMongodb,
@@ -30,6 +29,8 @@ import {
   SiLangchain,
   SiRuby,
 } from "react-icons/si";
+// AWS was removed from Simple Icons (Amazon brand-policy removal); use the Font Awesome mark.
+import { FaAws } from "react-icons/fa";
 
 function ConvexIcon({ className }: { className?: string }) {
   return (
@@ -97,7 +98,7 @@ const iconMap: Record<string, IconType> = {
   linux: SiLinux,
   javascript: SiJavascript,
   rust: SiRust,
-  aws: SiAmazonwebservices,
+  aws: FaAws,
   "google cloud": SiGooglecloud,
   kubernetes: SiKubernetes,
   mongodb: SiMongodb,

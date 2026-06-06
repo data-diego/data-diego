@@ -7,6 +7,7 @@ import { BlurFade } from "@/components/blur-fade";
 import { DottedGlowBackground } from "@/components/ui/dotted-glow-background";
 import { DitherShader } from "@/components/ui/dither-shader";
 import { EncryptedText } from "@/components/ui/encrypted-text";
+import { LiquidGlass } from "@/components/ui/liquid-glass";
 import { useOutsideClick } from "@/hooks/use-outside-click";
 
 export function Hero() {
@@ -144,7 +145,7 @@ export function Hero() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/20 h-full w-full z-10"
+            className="modal-overlay fixed inset-0 bg-black/20 h-full w-full z-10"
           />
         )}
       </AnimatePresence>
@@ -183,9 +184,15 @@ export function Hero() {
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 10 }}
               transition={{ duration: 0.2 }}
-              className="w-full max-w-[500px] h-fit max-h-[90%] flex flex-col bg-background border border-border rounded-2xl overflow-hidden shadow-xl"
+              className="glass-surface relative w-full max-w-[500px] h-fit max-h-[90%] flex flex-col bg-background border border-border rounded-2xl overflow-hidden shadow-xl"
             >
-              <div className="p-6 overflow-y-auto">
+              <LiquidGlass
+                radius={16}
+                scale={14}
+                chroma={0.25}
+                surfaceColor="oklch(0.22 0.025 270 / 0.5)"
+              />
+              <div className="relative z-10 p-6 overflow-y-auto">
                 <div className="flex items-start gap-4 mb-4">
                   <div className="shrink-0 size-12 rounded-full bg-foreground flex items-center justify-center text-background text-sm font-bold shadow-sm">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -278,7 +285,7 @@ export function Hero() {
                       <button
                         type="submit"
                         disabled={sending}
-                        className="w-full rounded-lg bg-foreground text-background py-2 text-sm font-medium hover:bg-foreground/90 transition-colors disabled:opacity-50"
+                        className="glass-cta w-full rounded-lg bg-foreground text-background py-2 text-sm font-medium hover:bg-foreground/90 transition-colors disabled:opacity-50"
                       >
                         {sending ? "Sending..." : "Send message"}
                       </button>

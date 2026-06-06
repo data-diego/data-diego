@@ -3,7 +3,7 @@
 @import "shadcn/tailwind.css";
 @plugin "@tailwindcss/typography";
 
-@custom-variant dark (&:is(.dark *));
+@custom-variant dark (&:where(.dark, .glass) *);
 
 @theme inline {
   --color-background: var(--background);
@@ -117,12 +117,227 @@
   --sidebar-ring: oklch(0.556 0 0);
 }
 
+/*
+ * Glass theme — Aave-style liquid glass (https://aave.com/design/building-glass-for-the-web).
+ * Dark-derived but TRANSLUCENT tokens so backdrops show through. Real pixel refraction is
+ * layered on key surfaces by the <LiquidGlass> component (Tier B, Chromium only); these tokens
+ * + the global retint below provide the frosted baseline (Tier A) everywhere.
+ */
+.glass {
+  --background: oklch(0.16 0.01 270 / 0.55);
+  --foreground: oklch(0.985 0 0);
+  --card: oklch(0.22 0.015 270 / 0.45);
+  --card-foreground: oklch(0.985 0 0);
+  --popover: oklch(0.2 0.015 270 / 0.7);
+  --popover-foreground: oklch(0.985 0 0);
+  --primary: oklch(0.922 0 0);
+  --primary-foreground: oklch(0.205 0 0);
+  --secondary: oklch(0.3 0.02 270 / 0.4);
+  --secondary-foreground: oklch(0.985 0 0);
+  --muted: oklch(0.3 0.02 270 / 0.35);
+  --muted-foreground: oklch(0.78 0.01 270);
+  --accent: oklch(0.32 0.02 270 / 0.45);
+  --accent-foreground: oklch(0.985 0 0);
+  --destructive: oklch(0.704 0.191 22.216);
+  --border: oklch(1 0 0 / 18%);
+  --input: oklch(1 0 0 / 20%);
+  --ring: oklch(0.7 0 0 / 50%);
+  --chart-1: oklch(0.488 0.243 264.376);
+  --chart-2: oklch(0.696 0.17 162.48);
+  --chart-3: oklch(0.769 0.188 70.08);
+  --chart-4: oklch(0.627 0.265 303.9);
+  --chart-5: oklch(0.645 0.246 16.439);
+  --sidebar: oklch(0.2 0.015 270 / 0.55);
+  --sidebar-foreground: oklch(0.985 0 0);
+  --sidebar-primary: oklch(0.488 0.243 264.376);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.32 0.02 270 / 0.45);
+  --sidebar-accent-foreground: oklch(0.985 0 0);
+  --sidebar-border: oklch(1 0 0 / 18%);
+  --sidebar-ring: oklch(0.7 0 0 / 50%);
+  /* glass tunables consumed by <LiquidGlass> and the global retint */
+  --glass-blur: 12px;
+  --glass-saturate: 1.6;
+  --glass-edge: oklch(1 0 0 / 0.25);
+  --glass-sheen: oklch(1 0 0 / 0.12);
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;
   }
   body {
     @apply bg-background text-foreground;
+  }
+}
+
+/*
+ * Glass theme surface treatment.
+ * The body background is opaque so there is vivid content for the lenses to refract
+ * (a translucent --background alone would leave nothing to bend).
+ */
+.glass body {
+  background-color: oklch(0.1 0.02 270);
+}
+
+/* The vivid mesh lives on a fixed pseudo-element so it can slowly drift behind the glass. */
+.glass body::before {
+  content: "";
+  position: fixed;
+  inset: -25%;
+  z-index: -1;
+  pointer-events: none;
+  background-image:
+    radial-gradient(40% 45% at 12% 8%, oklch(0.44 0.17 285 / 0.85) 0%, transparent 60%),
+    radial-gradient(45% 50% at 92% 96%, oklch(0.42 0.15 200 / 0.8) 0%, transparent 60%),
+    radial-gradient(35% 40% at 96% 6%, oklch(0.4 0.15 330 / 0.6) 0%, transparent 55%),
+    radial-gradient(35% 45% at 4% 78%, oklch(0.36 0.13 250 / 0.55) 0%, transparent 60%);
+  animation: glass-bg-drift 26s ease-in-out infinite alternate;
+  will-change: transform;
+}
+
+@keyframes glass-bg-drift {
+  0% {
+    transform: translate3d(0, 0, 0) scale(1.05) rotate(0deg);
+  }
+  100% {
+    transform: translate3d(2%, -3%, 0) scale(1.18) rotate(5deg);
+  }
+}
+
+/* Frost every semantic surface so even un-wrapped panels read as glass (Tier A). */
+.glass [data-slot="card"],
+.glass [data-slot="dialog-content"],
+.glass [data-slot="sheet-content"],
+.glass [data-slot="popover-content"] {
+  background-color: var(--card);
+  backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+  border-color: var(--border);
+  box-shadow:
+    inset 0 1px 0 0 var(--glass-edge),
+    0 8px 32px oklch(0 0 0 / 0.35);
+}
+
+.glass [data-slot="dialog-overlay"],
+.glass [data-slot="sheet-overlay"],
+.glass .modal-overlay {
+  background-color: oklch(0 0 0 / 0.5) !important;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+/*
+ * Surfaces that host a <LiquidGlass> panel: strip their own opaque background under glass so
+ * the refraction reads cleanly. They keep their normal bg-background/border in light & dark.
+ */
+.glass .glass-surface {
+  background-color: transparent !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+}
+
+/*
+ * iOS-style interactive glass for small controls — skill pills (.glass-chip), badges, and the
+ * outline/secondary/ghost button variants. Bright top highlight + saturated frost + a tactile
+ * spring scale on hover/press, so they read as raised liquid-glass like the rest of the theme.
+ */
+.glass .glass-chip,
+.glass [data-slot="badge"]:where([data-variant="outline"], [data-variant="secondary"], [data-variant="ghost"]),
+.glass [data-slot="button"]:where([data-variant="outline"], [data-variant="secondary"], [data-variant="ghost"]) {
+  background-color: oklch(1 0 0 / 0.1) !important;
+  border-color: oklch(1 0 0 / 0.22) !important;
+  color: var(--foreground) !important;
+  backdrop-filter: blur(10px) saturate(1.8);
+  -webkit-backdrop-filter: blur(10px) saturate(1.8);
+  box-shadow:
+    inset 0 1px 0 0 oklch(1 0 0 / 0.4),
+    inset 0 -2px 4px 0 oklch(0 0 0 / 0.18),
+    0 4px 14px -2px oklch(0 0 0 / 0.35);
+  transition:
+    transform 0.18s cubic-bezier(0.34, 1.56, 0.64, 1),
+    background-color 0.18s,
+    box-shadow 0.18s;
+}
+
+.glass .glass-chip:hover,
+.glass [data-slot="badge"]:where([data-variant="outline"], [data-variant="secondary"], [data-variant="ghost"]):hover,
+.glass [data-slot="button"]:where([data-variant="outline"], [data-variant="secondary"], [data-variant="ghost"]):hover {
+  transform: scale(1.05);
+  background-color: oklch(1 0 0 / 0.18) !important;
+  color: var(--foreground) !important;
+  box-shadow:
+    inset 0 1px 0 0 oklch(1 0 0 / 0.55),
+    inset 0 -2px 4px 0 oklch(0 0 0 / 0.2),
+    0 6px 20px -2px oklch(0 0 0 / 0.42);
+}
+
+.glass .glass-chip:active,
+.glass [data-slot="button"]:where([data-variant="outline"], [data-variant="secondary"], [data-variant="ghost"]):active {
+  transform: scale(0.96);
+}
+
+/* Solid CTAs become transparent glass under the glass theme (e.g. the contact submit). */
+.glass .glass-cta {
+  background-color: oklch(1 0 0 / 0.12) !important;
+  color: var(--foreground) !important;
+  border: 1px solid oklch(1 0 0 / 0.25);
+  backdrop-filter: blur(10px) saturate(1.8);
+  -webkit-backdrop-filter: blur(10px) saturate(1.8);
+  box-shadow:
+    inset 0 1px 0 0 oklch(1 0 0 / 0.4),
+    inset 0 -2px 4px 0 oklch(0 0 0 / 0.18),
+    0 4px 14px -2px oklch(0 0 0 / 0.35);
+  transition: background-color 0.18s, box-shadow 0.18s;
+}
+
+.glass .glass-cta:hover {
+  background-color: oklch(1 0 0 / 0.2) !important;
+}
+
+/* StatefulButton's spinner/check are hardcoded to text-background — keep them light on glass. */
+.glass .glass-cta .loader,
+.glass .glass-cta .check {
+  color: var(--foreground) !important;
+}
+
+/*
+ * Glassy list rows (e.g. the Projects list) — lift into a frosted glass panel on hover.
+ * No transform here: these rows are framer-motion layout elements and we must not fight its
+ * inline transforms during the shared-element animation.
+ */
+.glass .glass-row {
+  border: 1px solid transparent;
+  transition: background-color 0.2s, box-shadow 0.2s, border-color 0.2s, backdrop-filter 0.2s;
+}
+
+.glass .glass-row:hover {
+  background-color: oklch(1 0 0 / 0.08) !important;
+  border-color: oklch(1 0 0 / 0.16);
+  backdrop-filter: blur(8px) saturate(1.6);
+  -webkit-backdrop-filter: blur(8px) saturate(1.6);
+  box-shadow:
+    inset 0 1px 0 0 oklch(1 0 0 / 0.28),
+    0 8px 22px -6px oklch(0 0 0 / 0.45);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .glass body::before {
+    animation: none !important;
+  }
+}
+
+/* Smooth crossfade when switching themes (View Transitions API). */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 0.4s;
+  animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation: none !important;
   }
 }
 

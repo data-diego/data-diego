@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useEffect, useId, useRef, useState } from "react";
+import React, { useCallback, useEffect, useId, useRef, useState } from "react";
+import { flushSync } from "react-dom";
 import { AnimatePresence, motion } from "motion/react";
 import { Separator } from "@/components/ui/separator";
 import { BlurFade } from "@/components/blur-fade";
@@ -11,6 +12,8 @@ import { useIsAdmin } from "@/hooks/use-is-admin";
 import { InlineEditExperience } from "@/components/admin/inline-edit-experience";
 import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import { LiquidGlass } from "@/components/ui/liquid-glass";
+import { cn } from "@/lib/utils";
 
 type ExperienceItem = NonNullable<
   ReturnType<typeof useQuery<typeof api.experiences.list>>
@@ -70,6 +73,9 @@ export function Experience() {
   const experiences = useQuery(api.experiences.list);
   const { isAdmin } = useIsAdmin();
   const [active, setActive] = useState<ExperienceItem | null>(null);
+  // Only allow the description to scroll once the open/layout animation has settled,
+  // otherwise the resizing container shows a jumping scrollbar mid-animation.
+  const [contentScrollable, setContentScrollable] = useState(false);
   const [editingExp, setEditingExp] = useState<ExperienceItem | undefined>(
     undefined
   );
@@ -77,10 +83,17 @@ export function Experience() {
   const ref = useRef<HTMLDivElement>(null);
   const id = useId();
 
+  // Commit overflow-hidden synchronously while the modal is still mounted, then close — so the
+  // exit (shrink) animation, which clones the last-rendered markup, never shows a scrollbar.
+  const closeModal = useCallback(() => {
+    flushSync(() => setContentScrollable(false));
+    setActive(null);
+  }, []);
+
   useEffect(() => {
     function onKeyDown(event: KeyboardEvent) {
       if (event.key === "Escape") {
-        setActive(null);
+        closeModal();
       }
     }
 
@@ -92,9 +105,9 @@ export function Experience() {
 
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, [active]);
+  }, [active, closeModal]);
 
-  useOutsideClick(ref, () => setActive(null));
+  useOutsideClick(ref, () => closeModal());
 
   if (!experiences || (experiences.length === 0 && !isAdmin)) return null;
 
@@ -137,7 +150,7 @@ export function Experience() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="fixed inset-0 bg-black/20 h-full w-full z-10"
+              className="modal-overlay fixed inset-0 bg-black/20 h-full w-full z-10"
             />
           )}
         </AnimatePresence>
@@ -152,16 +165,28 @@ export function Experience() {
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0, transition: { duration: 0.05 } }}
                 className="flex absolute top-4 right-4 lg:hidden items-center justify-center bg-background rounded-full h-8 w-8 border border-border"
-                onClick={() => setActive(null)}
+                onClick={() => closeModal()}
               >
                 <CloseIcon />
               </motion.button>
               <motion.div
                 layoutId={`card-${active._id}-${id}`}
                 ref={ref}
-                className="w-full max-w-[500px] h-fit max-h-[90%] flex flex-col bg-background border border-border rounded-2xl overflow-hidden shadow-xl"
+                onLayoutAnimationComplete={() => setContentScrollable(true)}
+                className="glass-surface relative w-full max-w-[500px] h-fit max-h-[90%] flex flex-col bg-background border border-border rounded-2xl overflow-hidden shadow-xl"
               >
-                <div className="p-6 overflow-y-auto">
+                <LiquidGlass
+                  radius={16}
+                  scale={14}
+                  chroma={0.25}
+                  surfaceColor="oklch(0.22 0.025 270 / 0.5)"
+                />
+                <div
+                  className={cn(
+                    "relative z-10 p-6",
+                    contentScrollable ? "overflow-y-auto" : "overflow-hidden"
+                  )}
+                >
                   <div className="flex items-start gap-4 mb-4">
                     <motion.div layoutId={`logo-${active._id}-${id}`} className="shrink-0">
                       <ExpLogo exp={active} size="lg" />
@@ -204,9 +229,9 @@ export function Experience() {
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
-                            setActive(null);
                             setEditingExp(active);
                             setEditOpen(true);
+                            closeModal();
                           }}
                           className="shrink-0 size-7 rounded-full border border-border flex items-center justify-center text-muted-foreground hover:text-foreground hover:border-foreground transition-colors"
                         >
@@ -249,7 +274,7 @@ export function Experience() {
                 type="button"
                 layoutId={`card-${job._id}-${id}`}
                 onClick={() => setActive(job)}
-                className="group/card flex items-center gap-4 p-3 -mx-3 rounded-xl hover:bg-muted/50 cursor-pointer transition-colors relative w-full text-left"
+                className="glass-row group/card flex items-center gap-4 p-3 -mx-3 rounded-xl hover:bg-muted/50 cursor-pointer transition-colors relative w-full text-left"
               >
                 <motion.div layoutId={`logo-${job._id}-${id}`} className="shrink-0">
                   <ExpLogo exp={job} size="sm" />
