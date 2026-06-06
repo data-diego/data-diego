@@ -24,7 +24,7 @@ interface LiquidGlassProps {
   radius?: number;
   /** Refraction strength (feDisplacementMap scale). */
   scale?: number;
-  /** Width of the refracting edge band in px. Defaults to `radius`. */
+  /** Width of the refracting edge band in px. Defaults to `radius * 1.6`. */
   depth?: number;
   /** Ramp exponent across the edge band — higher eases the bend toward the rim. */
   curvature?: number;
@@ -147,11 +147,11 @@ function supportsBackdropDisplacement(): boolean {
 
 export function LiquidGlass({
   radius = 16,
-  scale = 10,
+  scale = 24,
   depth,
-  curvature = 2,
-  chroma = 0.2,
-  blur = 4,
+  curvature = 5,
+  chroma = 0.22,
+  blur = 2,
   edgeHighlight = 0.25,
   tint = true,
   surfaceColor = "var(--card)",
@@ -207,7 +207,9 @@ export function LiquidGlass({
       width,
       height,
       radius,
-      depth ?? radius,
+      // Widen the refracting band beyond the corner radius so the lens lip reads on
+      // straight edges too; the `curvature` ramp keeps the heavy bend at the very rim.
+      depth ?? Math.round(radius * 1.6),
       curvature
     );
     setMapUri(uri);

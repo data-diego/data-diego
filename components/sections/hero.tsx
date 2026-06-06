@@ -188,9 +188,11 @@ export function Hero() {
             >
               <LiquidGlass
                 radius={16}
-                scale={14}
+                scale={56}
+                depth={28}
+                curvature={6}
                 chroma={0.25}
-                surfaceColor="oklch(0.22 0.025 270 / 0.5)"
+                surfaceColor="oklch(0.22 0.025 270 / 0.26)"
               />
               <div className="relative z-10 p-6 overflow-y-auto">
                 <div className="flex items-start gap-4 mb-4">

@@ -177,9 +177,11 @@ export function Experience() {
               >
                 <LiquidGlass
                   radius={16}
-                  scale={14}
+                  scale={56}
+                  depth={28}
+                  curvature={6}
                   chroma={0.25}
-                  surfaceColor="oklch(0.22 0.025 270 / 0.5)"
+                  surfaceColor="oklch(0.22 0.025 270 / 0.26)"
                 />
                 <div
                   className={cn(
