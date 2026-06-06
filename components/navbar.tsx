@@ -34,7 +34,10 @@ export function Navbar() {
   const current = (
     theme === "system" ? resolvedTheme ?? "light" : theme ?? "light"
   ) as ThemeName;
-  const isGlass = current === "glass";
+  // Gate on `mounted` so the first (hydration) render matches the server's non-glass
+  // markup; next-themes only exposes the resolved theme after mount, so reading it
+  // earlier would swap in the glass pills and trip a hydration mismatch.
+  const isGlass = mounted && current === "glass";
   const next = THEME_ORDER[(THEME_ORDER.indexOf(current) + 1) % THEME_ORDER.length];
 
   const cycleTheme = () => {
