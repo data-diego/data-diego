@@ -6,11 +6,9 @@ import { useTheme } from "next-themes";
 import { useEffect, useState, useSyncExternalStore } from "react";
 import { cn } from "@/lib/utils";
 
-const navLinks = [
-  { href: "/", label: "Home" },
-];
+const navLinks: { href: string; label: string }[] = [];
 
-const THEME_ORDER = ["light", "dark", "glass"] as const;
+const THEME_ORDER = ["glass", "dark", "light"] as const;
 type ThemeName = (typeof THEME_ORDER)[number];
 
 export function Navbar() {
