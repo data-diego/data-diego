@@ -426,6 +426,12 @@
   --tw-prose-pre-bg: var(--muted);
 }
 
+/* `dark:prose-invert` (the dark variant includes .glass) resets --tw-prose-bold, so
+   pin bold text to the theme foreground with a selector that outranks it. */
+.prose :is(strong, b) {
+  color: var(--foreground);
+}
+
 .prose pre {
   @apply rounded-lg border border-border;
 }
