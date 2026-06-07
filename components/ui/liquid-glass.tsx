@@ -26,12 +26,20 @@ interface LiquidGlassProps {
   scale?: number;
   /** Width of the refracting edge band in px. Defaults to `radius * 1.6`. */
   depth?: number;
-  /** Ramp exponent across the edge band — higher eases the bend toward the rim. */
+  /** Bezel cross-section: "squircle" (Apple-like, default), "convex" (harder rim), or "power". */
+  profile?: BezelProfile;
+  /** Ramp exponent across the edge band — only used when `profile="power"`. */
   curvature?: number;
+  /** Whole-surface magnification, 0..~0.2. Pulls the body toward center for a zoomed-lens read. */
+  magnify?: number;
   /** Chromatic aberration amount (0 = none, ~0.2 = visible rainbow fringe). */
   chroma?: number;
-  /** Frost blur radius in px (feGaussianBlur stdDeviation / CSS blur). */
+  /** Frost blur radius in px. The surface is blurred by `blur * 2` in both tiers. */
   blur?: number;
+  /** Backdrop saturation boost — keeps both tiers reading as the same frosted glass. */
+  saturate?: number;
+  /** Confine the frost to the refracting rim so the lens body stays clear (Tier B only, opt-in). */
+  edgeFrost?: boolean;
   /** Edge-highlight intensity, 0..1. */
   edgeHighlight?: number;
   /** Render the translucent tint layer (the glass surface fill). */
@@ -56,76 +64,156 @@ function roundedRectSDF(
   return outside + inside - r;
 }
 
+/** Bezel cross-section shapes for the refracting edge band. */
+type BezelProfile = "squircle" | "convex" | "power";
+
 /**
- * Build the displacement map as a PNG data URI. R channel encodes horizontal displacement,
- * G vertical, 128 = neutral. Interior is flat; pixels within `depth` of the rounded edge bend
- * inward (toward center) along the edge normal to recreate refraction. Only the top-left
- * quadrant is computed and mirrored into the other three (four-fold symmetry → ~25% of the work).
+ * Precompute the normalized refraction magnitude across the edge band (256 samples, indexed by
+ * `u`: 0 = inner edge of the band, 1 = the rim). For a real glass bezel the bend at each point is
+ * proportional to the surface slope, so we sample a height profile `h(u)` and use |dh/du|,
+ * normalized to [0,1]. A `convex` circle ramps hard at the rim; `squircle` (Apple's preferred
+ * curve) keeps the bezel optically thinner with a smoother ramp; `power` is the old t^curvature
+ * heuristic kept as an escape hatch.
+ */
+function bezelMagnitudeLUT(
+  profile: BezelProfile,
+  curvature: number,
+  n = 256
+): Float32Array {
+  const lut = new Float32Array(n);
+  if (profile === "power") {
+    for (let i = 0; i < n; i++) lut[i] = Math.pow(i / (n - 1), curvature);
+    return lut;
+  }
+  // Bezel height as a function of u (flat interior at u=0, rising to the rim at u=1).
+  const height = (u: number): number => {
+    const x = Math.min(0.9999, Math.max(0, u));
+    if (profile === "convex") return 1 - Math.sqrt(1 - x * x);
+    return 1 - Math.pow(1 - Math.pow(x, 4), 0.25); // squircle
+  };
+  const raw = new Float32Array(n);
+  const d = 1 / n;
+  let max = 0;
+  for (let i = 0; i < n; i++) {
+    const u = i / (n - 1);
+    const slope = Math.abs(height(u + d) - height(u - d));
+    raw[i] = slope;
+    if (slope > max) max = slope;
+  }
+  for (let i = 0; i < n; i++) lut[i] = max > 0 ? raw[i] / max : 0;
+  return lut;
+}
+
+/**
+ * Build the displacement map as a PNG data URI. R channel encodes horizontal displacement, G
+ * vertical (128 = neutral); B carries a frost weight (0 = clear center, 255 = full edge frost) so
+ * the filter can keep the lens body sharp and frost only the rim.
+ *
+ * The rounded rect is centered in a canvas padded by `pad` on every side; the padding is opaque
+ * neutral gray so pixels displaced toward the rim never sample a transparent (≈black → max-shift)
+ * region — the classic edge-clipping artifact. Pixels within `depth` of the edge bend inward along
+ * the edge normal (a lens rim); the whole interior is pulled gently toward center by `magnify` for
+ * the slightly zoomed "glass body". Only the top-left quadrant is computed and mirrored into the
+ * other three (four-fold symmetry → ~25% of the work).
  */
 function buildDisplacementMap(
   w: number,
   h: number,
   radius: number,
   depth: number,
-  curvature: number
+  curvature: number,
+  pad: number,
+  profile: BezelProfile,
+  magnify: number
 ): string {
+  const W = w + pad * 2;
+  const H = h + pad * 2;
   const canvas = document.createElement("canvas");
-  canvas.width = w;
-  canvas.height = h;
+  canvas.width = W;
+  canvas.height = H;
   const ctx = canvas.getContext("2d");
   if (!ctx) return "";
 
-  const img = ctx.createImageData(w, h);
+  const img = ctx.createImageData(W, H);
   const data = img.data;
   const r = Math.max(0, Math.min(radius, Math.min(w, h) / 2));
   const band = Math.max(1, depth);
+  const lut = bezelMagnitudeLUT(profile, curvature);
+  const cxE = w / 2;
+  const cyE = h / 2;
+  const halfDiag = Math.hypot(w, h) / 2 || 1;
 
-  const set = (x: number, y: number, R: number, G: number) => {
-    const i = (y * w + x) * 4;
+  const set = (x: number, y: number, R: number, G: number, B: number) => {
+    const i = (y * W + x) * 4;
     data[i] = R;
     data[i + 1] = G;
-    data[i + 2] = 128;
+    data[i + 2] = B;
     data[i + 3] = 255;
   };
 
-  const halfW = Math.ceil(w / 2);
-  const halfH = Math.ceil(h / 2);
+  const halfW = Math.ceil(W / 2);
+  const halfH = Math.ceil(H / 2);
 
   for (let y = 0; y < halfH; y++) {
     for (let x = 0; x < halfW; x++) {
-      const cx = x + 0.5;
-      const cy = y + 0.5;
-      const d = roundedRectSDF(cx, cy, w, h, r); // <=0 inside, 0 at edge
+      // Element-space coordinates: the rounded rect is centered in the padded canvas.
+      const ex = x - pad + 0.5;
+      const ey = y - pad + 0.5;
+      const d = roundedRectSDF(ex, ey, w, h, r); // <=0 inside, 0 at edge, >0 in the pad
 
       let dx = 0;
       let dy = 0;
-      // Only the inner edge band [-band, 0] refracts.
+      let frost = 0;
+
+      // Bezel refraction: only the inner edge band [-band, 0] bends.
       if (d > -band && d <= 0) {
-        const t = Math.max(0, Math.min(1, (d + band) / band)); // 0 deep, 1 at edge
-        const mag = Math.pow(t, curvature);
+        const t = (d + band) / band; // 0 deep, 1 at rim
+        const mag = lut[Math.max(0, Math.min(255, Math.round(t * 255)))];
         // Outward normal via finite differences of the SDF.
         const nx =
-          roundedRectSDF(cx + 1, cy, w, h, r) -
-          roundedRectSDF(cx - 1, cy, w, h, r);
+          roundedRectSDF(ex + 1, ey, w, h, r) -
+          roundedRectSDF(ex - 1, ey, w, h, r);
         const ny =
-          roundedRectSDF(cx, cy + 1, w, h, r) -
-          roundedRectSDF(cx, cy - 1, w, h, r);
+          roundedRectSDF(ex, ey + 1, w, h, r) -
+          roundedRectSDF(ex, ey - 1, w, h, r);
         const len = Math.hypot(nx, ny) || 1;
         // Bend inward (toward center) so the rim samples interior pixels — a lens.
-        dx = -(nx / len) * mag;
-        dy = -(ny / len) * mag;
+        dx -= (nx / len) * mag;
+        dy -= (ny / len) * mag;
+        frost = mag;
       }
 
-      const R = Math.max(0, Math.min(255, Math.round(128 + dx * 127)));
-      const G = Math.max(0, Math.min(255, Math.round(128 + dy * 127)));
-      const mx = w - 1 - x;
-      const my = h - 1 - y;
+      // Whole-surface magnification: interior samples pulled gently toward center, so the
+      // backdrop reads slightly zoomed-in through the glass body (the lens, not just the rim).
+      if (magnify > 0 && d <= 0) {
+        const tox = cxE - ex;
+        const toy = cyE - ey;
+        const dist = Math.hypot(tox, toy);
+        if (dist > 0) {
+          const m = magnify * (dist / halfDiag);
+          dx += (tox / dist) * m;
+          dy += (toy / dist) * m;
+        }
+      }
 
-      // Mirror across X inverts horizontal displacement; across Y inverts vertical.
-      set(x, y, R, G);
-      set(mx, y, 255 - R, G);
-      set(x, my, R, 255 - G);
-      set(mx, my, 255 - R, 255 - G);
+      const R = Math.max(
+        0,
+        Math.min(255, Math.round(128 + Math.max(-1, Math.min(1, dx)) * 127))
+      );
+      const G = Math.max(
+        0,
+        Math.min(255, Math.round(128 + Math.max(-1, Math.min(1, dy)) * 127))
+      );
+      const B = Math.max(0, Math.min(255, Math.round(frost * 255)));
+
+      const mx = W - 1 - x;
+      const my = H - 1 - y;
+      // The displacement field is antisymmetric about center: mirror across X inverts horizontal
+      // displacement, across Y inverts vertical. The frost weight (B) is symmetric.
+      set(x, y, R, G, B);
+      set(mx, y, 255 - R, G, B);
+      set(x, my, R, 255 - G, B);
+      set(mx, my, 255 - R, 255 - G, B);
     }
   }
 
@@ -149,9 +237,13 @@ export function LiquidGlass({
   radius = 16,
   scale = 24,
   depth,
+  profile = "squircle",
   curvature = 5,
+  magnify = 0.06,
   chroma = 0.22,
   blur = 2,
+  saturate = 1.6,
+  edgeFrost = false,
   edgeHighlight = 0.25,
   tint = true,
   surfaceColor = "var(--card)",
@@ -163,7 +255,8 @@ export function LiquidGlass({
   const [mounted, setMounted] = useState(false);
   const [tierB, setTierB] = useState(false);
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
-  const [mapUri, setMapUri] = useState("");
+  // The map and its pad are stored together so the SVG filter region always matches the PNG.
+  const [map, setMap] = useState({ uri: "", pad: 0, w: 0, h: 0 });
   const [version, setVersion] = useState(0);
 
   const rawId = useId();
@@ -203,20 +296,39 @@ export function LiquidGlass({
     if (!glassActive || !tierB) return;
     const { width, height } = dimensions;
     if (width === 0 || height === 0) return;
+    // Pad the map/filter region by at least half the max displacement (the red channel pushes
+    // scale*(1+chroma)) plus the blur reach, so edge pixels never sample outside the region.
+    const pad = Math.ceil(scale * (1 + Math.max(0, chroma)) * 0.5 + blur * 3);
     const uri = buildDisplacementMap(
       width,
       height,
       radius,
       // Widen the refracting band beyond the corner radius so the lens lip reads on
-      // straight edges too; the `curvature` ramp keeps the heavy bend at the very rim.
+      // straight edges too; the profile ramp keeps the heavy bend at the very rim.
       depth ?? Math.round(radius * 1.6),
-      curvature
+      curvature,
+      pad,
+      profile,
+      magnify
     );
-    setMapUri(uri);
+    setMap({ uri, pad, w: width, h: height });
     // Bump the filter id so Safari/WebKit can't serve a stale cached filter.
     setVersion((v) => v + 1);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [glassActive, tierB, dimensions.width, dimensions.height, radius, depth, curvature]);
+  }, [
+    glassActive,
+    tierB,
+    dimensions.width,
+    dimensions.height,
+    radius,
+    depth,
+    curvature,
+    profile,
+    magnify,
+    scale,
+    chroma,
+    blur,
+  ]);
 
   if (!glassActive) {
     // Passthrough: nothing rendered in light/dark. Keep the ref host so we can measure once
@@ -230,8 +342,13 @@ export function LiquidGlass({
     );
   }
 
-  const { width, height } = dimensions;
-  const useRefraction = tierB && mapUri && width > 0 && height > 0;
+  const useRefraction = tierB && map.uri && map.w > 0 && map.h > 0;
+  // Padded filter region: feImage and <filter> must span the same padded box as the PNG.
+  const fx = -map.pad;
+  const fy = -map.pad;
+  const fw = map.w + map.pad * 2;
+  const fh = map.h + map.pad * 2;
+  const maskFrost = edgeFrost && blur > 0;
 
   return (
     <div
@@ -255,18 +372,18 @@ export function LiquidGlass({
               id={filterId}
               filterUnits="userSpaceOnUse"
               primitiveUnits="userSpaceOnUse"
-              x="0"
-              y="0"
-              width={width}
-              height={height}
+              x={fx}
+              y={fy}
+              width={fw}
+              height={fh}
               colorInterpolationFilters="sRGB"
             >
               <feImage
-                href={mapUri}
-                x="0"
-                y="0"
-                width={width}
-                height={height}
+                href={map.uri}
+                x={fx}
+                y={fy}
+                width={fw}
+                height={fh}
                 preserveAspectRatio="none"
                 result="map"
               />
@@ -315,10 +432,58 @@ export function LiquidGlass({
                 values="0 0 0 0 0  0 0 0 0 0  0 0 1 0 0  0 0 0 1 0"
                 result="blue"
               />
-              {/* Recombine the chromatically-split channels, then frost. */}
+              {/* Recombine the chromatically-split channels. */}
               <feBlend in="red" in2="green" mode="screen" result="rg" />
               <feBlend in="rg" in2="blue" mode="screen" result="rgb" />
-              <feGaussianBlur in="rgb" stdDeviation={blur} />
+              {/* Saturation boost so Tier B reads as the same frosted glass as the Tier A blur. */}
+              <feColorMatrix
+                in="rgb"
+                type="saturate"
+                values={String(saturate)}
+                result="rgbSat"
+              />
+
+              {maskFrost ? (
+                <>
+                  {/* Opt-in "clear lens body": frost only the rim, keep the center sharp, using the
+                      map's blue channel (frost weight) as the blend mask. */}
+                  <feGaussianBlur in="rgbSat" stdDeviation={blur * 2} result="frosted" />
+                  <feColorMatrix
+                    in="map"
+                    type="matrix"
+                    values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 1 0 0"
+                    result="frostA"
+                  />
+                  <feComposite
+                    in="frosted"
+                    in2="frostA"
+                    operator="in"
+                    result="frostMasked"
+                  />
+                  <feComponentTransfer in="frostA" result="clearA">
+                    <feFuncA type="table" tableValues="1 0" />
+                  </feComponentTransfer>
+                  <feComposite
+                    in="rgbSat"
+                    in2="clearA"
+                    operator="in"
+                    result="clearMasked"
+                  />
+                  {/* Premultiplied add of two complementary masks → linear blend, full alpha. */}
+                  <feComposite
+                    in="frostMasked"
+                    in2="clearMasked"
+                    operator="arithmetic"
+                    k1="0"
+                    k2="1"
+                    k3="1"
+                    k4="0"
+                  />
+                </>
+              ) : (
+                // Default: uniform frost across the whole surface, matching the Tier A blur(blur*2).
+                <feGaussianBlur in="rgbSat" stdDeviation={blur * 2} />
+              )}
             </filter>
           </defs>
         </svg>
@@ -331,8 +496,8 @@ export function LiquidGlass({
           borderRadius: radius,
           backdropFilter: useRefraction
             ? `url(#${filterId})`
-            : `blur(${blur * 2}px) saturate(1.6)`,
-          WebkitBackdropFilter: `blur(${blur * 2}px) saturate(1.6)`,
+            : `blur(${blur * 2}px) saturate(${saturate})`,
+          WebkitBackdropFilter: `blur(${blur * 2}px) saturate(${saturate})`,
         }}
       />
 
