@@ -424,6 +424,8 @@
   --tw-prose-links: var(--primary);
   --tw-prose-code: var(--foreground);
   --tw-prose-pre-bg: var(--muted);
+  --tw-prose-quotes: var(--foreground);
+  --tw-prose-quote-borders: var(--border);
 }
 
 /* `dark:prose-invert` (the dark variant includes .glass) resets --tw-prose-bold, so

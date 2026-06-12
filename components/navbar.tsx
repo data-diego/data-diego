@@ -141,9 +141,7 @@ export function Navbar() {
                   strokeLinecap="round"
                   strokeLinejoin="round"
                 >
-                  {/* droplet / lens */}
-                  <path d="M12 2.5c3.5 4.2 6 7.3 6 10.5a6 6 0 0 1-12 0c0-3.2 2.5-6.3 6-10.5z" />
-                  <path d="M9.5 13.5a2.5 2.5 0 0 0 2.5 2.5" opacity={0.5} />
+                  <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
                 </svg>
               )}
             </button>
