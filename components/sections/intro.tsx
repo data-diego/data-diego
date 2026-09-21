@@ -27,7 +27,7 @@ export function Intro({ className }: { className?: string }) {
       <LinkStrip
         links={[
           { href: "https://github.com/data-diego", label: "GitHub" },
-          { href: "https://x.com/datadiego_", label: "X/Twitter" },
+          { href: "https://x.com/datadiego_", label: "X" },
           { href: "/blog", label: "Blog" },
           { href: "/feed.xml", label: "RSS" },
           { href: "mailto:info@datadiego.com", label: "Mail" },

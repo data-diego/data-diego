@@ -33,13 +33,13 @@ function ExpLogo({
       <img
         src={exp.imageUrl}
         alt={exp.company}
-        className={`${px} rounded-full object-cover shadow-sm ${size === "sm" ? "ring-2 ring-background" : ""} ${className}`}
+        className={`${px} rounded-full object-cover shadow-sm ${className}`}
       />
     );
   }
   return (
     <div
-      className={`${px} rounded-full ${exp.color} flex items-center justify-center text-white text-sm font-bold shadow-sm ${size === "sm" ? "ring-2 ring-background" : ""} ${className}`}
+      className={`${px} rounded-full ${exp.color} flex items-center justify-center text-white text-sm font-bold shadow-sm ${className}`}
     >
       {exp.logo}
     </div>
