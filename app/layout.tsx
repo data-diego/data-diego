@@ -1,22 +1,13 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import { fontVariables } from "./fonts";
 import { ConvexAuthNextjsServerProvider } from "@convex-dev/auth/nextjs/server";
 import ConvexClientProvider from "@/components/ConvexClientProvider";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
 import { Toaster } from "@/components/ui/sonner";
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
+import { PaperBackground } from "@/components/paper-shaders";
 
 export const metadata: Metadata = {
   icons: {
@@ -62,11 +53,10 @@ export default function RootLayout({
 }>) {
   return (
     <ConvexAuthNextjsServerProvider>
-      <html lang="en" suppressHydrationWarning>
-        <body
-          className={`${geistSans.variable} ${geistMono.variable} font-sans antialiased min-h-screen flex flex-col`}
-        >
+      <html lang="en" className={fontVariables} suppressHydrationWarning>
+        <body className="font-sans antialiased min-h-screen flex flex-col">
           <ThemeProvider>
+            <PaperBackground />
             <ConvexClientProvider>
               <Navbar />
               <main className="flex-1 pt-14">{children}</main>

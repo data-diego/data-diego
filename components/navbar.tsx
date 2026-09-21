@@ -5,10 +5,18 @@ import { usePathname } from "next/navigation";
 import { useTheme } from "next-themes";
 import { useEffect, useState, useSyncExternalStore } from "react";
 import { cn } from "@/lib/utils";
+import { FontPicker } from "@/components/font-picker";
 
-const navLinks: { href: string; label: string }[] = [];
+// One route per section.
+const navLinks = [
+  { href: "/about", label: "About" },
+  { href: "/work", label: "Work" },
+  { href: "/blog", label: "Blog" },
+  { href: "/tools", label: "Tools" },
+  { href: "/contact", label: "Contact" },
+];
 
-const THEME_ORDER = ["glass", "dark", "light"] as const;
+const THEME_ORDER = ["paper", "glass", "dark", "light"] as const;
 type ThemeName = (typeof THEME_ORDER)[number];
 
 export function Navbar() {
@@ -28,9 +36,14 @@ export function Navbar() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  // `glass` is a real selectable theme; `system` resolves to light/dark.
+  // `paper` and `glass` are real selectable themes; `system` resolves to light/dark.
+  // Before mount we render the default theme's (paper) markup to match the server.
   const current = (
-    theme === "system" ? resolvedTheme ?? "light" : theme ?? "light"
+    !mounted
+      ? "paper"
+      : theme === "system"
+        ? resolvedTheme ?? "light"
+        : theme ?? "light"
   ) as ThemeName;
   // Gate on `mounted` so the first (hydration) render matches the server's non-glass
   // markup; next-themes only exposes the resolved theme after mount, so reading it
@@ -51,6 +64,43 @@ export function Navbar() {
 
   // In glass mode the navbar is a set of floating glass pills rather than a solid bar.
   const pill = "glass-chip rounded-full";
+
+  // Paper mode: a full-width tab bar, like a printed form header.
+  if (current === "paper") {
+    const cell =
+      "paper-label flex shrink-0 items-center px-2 sm:px-3 border-foreground/25 text-foreground! hover:bg-foreground hover:text-background! transition-colors";
+    return (
+      <header className="fixed top-0 inset-x-0 z-50 bg-background border-b border-foreground/25">
+        <nav className="flex h-[32px] items-stretch overflow-x-auto">
+          <Link href="/" className={cn(cell, "border-r font-bold")} aria-label="Home">
+            ▦
+          </Link>
+          {navLinks.map((tab) => (
+            <Link
+              key={tab.href}
+              href={tab.href}
+              className={cn(
+                cell,
+                "border-r",
+                pathname.startsWith(tab.href) && "bg-foreground/10"
+              )}
+            >
+              {tab.label}
+            </Link>
+          ))}
+          <div className="flex-1" />
+          <FontPicker className={cn(cell, "border-l bg-transparent outline-none cursor-pointer max-sm:hidden")} />
+          <button
+            onClick={cycleTheme}
+            className={cn(cell, "border-l cursor-pointer")}
+            aria-label={`Switch theme (current: ${current}, next: ${next})`}
+          >
+            ◐<span className="ml-1 max-sm:hidden">{current}</span>
+          </button>
+        </nav>
+      </header>
+    );
+  }
 
   return (
     <header
@@ -85,7 +135,7 @@ export function Navbar() {
               key={link.href}
               href={link.href}
               className={cn(
-                "text-sm transition-colors",
+                "text-sm transition-colors max-sm:hidden",
                 isGlass
                   ? cn(pill, "px-4 py-2")
                   : pathname === link.href

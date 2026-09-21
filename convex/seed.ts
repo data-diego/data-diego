@@ -1,5 +1,67 @@
-import { mutation } from "./_generated/server";
+import { internalMutation, mutation } from "./_generated/server";
 import { getAuthUserId } from "@convex-dev/auth/server";
+
+// Real work history, newest first. Source of truth for both the first-run seed and
+// `syncExperiences`. Descriptions are the public one-liners only — flesh out `content`
+// (markdown, shown in the modal) from the admin UI.
+const EXPERIENCES = [
+  {
+    company: "BipBop Labs",
+    role: "Software Engineer",
+    period: "Jun 2026 - Present",
+    logo: "B",
+    color: "bg-emerald-600",
+    description: "Software engineer, full-time. Hybrid.",
+    content: "Software engineer at BipBop Labs. Full-time, hybrid.",
+    slug: "bipbop-labs",
+  },
+  {
+    company: "Grupalia",
+    role: "Software Engineer",
+    period: "Dec 2025 - Jun 2026",
+    logo: "G",
+    color: "bg-violet-600",
+    description: "Developing the neobank for the SMEs of Latam.",
+    content:
+      "Developing the neobank for the SMEs of Latam. Software infrastructure and software design.\n\nFull-time, hybrid — Santiago, Chile.",
+    slug: "grupalia",
+  },
+  {
+    company: "PowerFinderAI",
+    role: "Full Stack Developer",
+    period: "Aug 2024 - Jun 2025",
+    logo: "P",
+    color: "bg-indigo-500",
+    description: "Developed Powerfinder: semantic search for your data.",
+    content:
+      "Developed Powerfinder: semantic search for your data.\n\nFull-time, hybrid — Santiago, Chile.",
+    slug: "powerfinder-ai",
+  },
+];
+
+// CLI/dashboard only (internal): `npx convex run seed:syncExperiences` (add `--prod` for
+// production). Upserts EXPERIENCES by slug — patching keeps any uploaded logo — and moves
+// every other entry after them, preserving their relative order.
+export const syncExperiences = internalMutation({
+  args: {},
+  handler: async (ctx) => {
+    const existing = await ctx.db
+      .query("experiences")
+      .withIndex("by_order")
+      .take(100);
+    const slugs = new Set(EXPERIENCES.map((e) => e.slug));
+    for (const [i, exp] of EXPERIENCES.entries()) {
+      const match = existing.find((e) => e.slug === exp.slug);
+      if (match) await ctx.db.patch(match._id, { ...exp, order: i + 1 });
+      else await ctx.db.insert("experiences", { ...exp, order: i + 1 });
+    }
+    const others = existing.filter((e) => !slugs.has(e.slug));
+    for (const [i, exp] of others.entries()) {
+      await ctx.db.patch(exp._id, { order: EXPERIENCES.length + i + 1 });
+    }
+    return `Synced ${EXPERIENCES.length} experiences, kept ${others.length} others`;
+  },
+});
 
 export const run = mutation({
   args: {},
@@ -12,45 +74,9 @@ export const run = mutation({
     if (existingExp) throw new Error("Data already seeded");
 
     // Experiences
-    await ctx.db.insert("experiences", {
-      company: "Freelance",
-      role: "Full-Stack Engineer",
-      period: "2023 - Present",
-      logo: "F",
-      color: "bg-violet-500",
-      description:
-        "Building web apps and AI integrations for clients across Latin America.",
-      content:
-        "Working with startups and agencies to deliver full-stack web applications, from initial architecture to deployment and maintenance.\n\nKey projects include AI-powered content platforms, real-time dashboards, and e-commerce solutions. Built with React, Next.js, Python, and various cloud services.\n\nFocus on clean, maintainable code and delivering high-quality user experiences on tight timelines.",
-      slug: "freelance",
-      order: 1,
-    });
-    await ctx.db.insert("experiences", {
-      company: "DataCo",
-      role: "Data Engineer",
-      period: "2021 - 2023",
-      logo: "D",
-      color: "bg-blue-500",
-      description:
-        "Designed ETL pipelines and real-time data systems processing millions of events daily.",
-      content:
-        "Led the design and implementation of data pipelines handling millions of events daily using Apache Kafka, Python, and PostgreSQL.\n\nBuilt real-time analytics dashboards and automated reporting systems that reduced manual work by 80%. Managed data infrastructure on AWS and optimized query performance across multiple databases.\n\nMentored junior engineers and established data engineering best practices across the team.",
-      slug: "dataco",
-      order: 2,
-    });
-    await ctx.db.insert("experiences", {
-      company: "StartupCL",
-      role: "Software Developer",
-      period: "2019 - 2021",
-      logo: "S",
-      color: "bg-emerald-500",
-      description:
-        "Built core product features and internal tooling for a fast-growing fintech startup.",
-      content:
-        "Developed core product features for a fintech platform serving thousands of users, including payment processing, user onboarding, and reporting modules.\n\nBuilt internal tooling that improved team productivity and reduced customer support response times. Worked across the full stack with React, Node.js, and PostgreSQL.\n\nParticipated in product decisions and helped shape the technical roadmap during rapid growth.",
-      slug: "startupcl",
-      order: 3,
-    });
+    for (const [i, exp] of EXPERIENCES.entries()) {
+      await ctx.db.insert("experiences", { ...exp, order: i + 1 });
+    }
 
     // Projects
     await ctx.db.insert("projects", {
