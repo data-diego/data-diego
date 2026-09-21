@@ -12,7 +12,7 @@ import {
 
 const TRANSPARENT = "#00000000";
 
-// Ink colour for the pixel art: dark on the light themes (paper, light), light otherwise.
+// Ink colour for the pixel art: dark ink on paper, paper-coloured ink on dark paper.
 function useInk() {
   const { resolvedTheme } = useTheme();
   const mounted = useSyncExternalStore(
@@ -20,25 +20,22 @@ function useInk() {
     () => true,
     () => false,
   );
-  const theme = mounted ? resolvedTheme : "paper";
-  return {
-    theme,
-    ink: theme === "glass" || theme === "dark" ? "#f2f0e6" : "#1c1d17",
-  };
+  const dark = mounted && resolvedTheme === "dark";
+  return { dark, ink: dark ? "#e9e4d0" : "#1c1d17" };
 }
 
-/** Fixed paper-texture sheet behind the page. Renders only under the paper theme. */
+/** Fixed paper-texture sheet behind the page. */
 export function PaperBackground() {
-  const { theme } = useInk();
-  if (theme !== "paper") return null;
+  const { dark } = useInk();
+  const sheet = dark ? "#1c1d17" : "#e9e4d0";
   return (
     <PaperTexture
       className="fixed inset-0 -z-10 pointer-events-none"
       fit="cover"
       scale={1.6}
-      colorBack="#e9e4d0"
-      colorPaper="#e9e4d0"
-      colorShadow="#bdb697"
+      colorBack={sheet}
+      colorPaper={sheet}
+      colorShadow={dark ? "#0b0c08" : "#bdb697"}
       roughness={0.25}
       roughnessSize={0.6}
       fiber={0.45}

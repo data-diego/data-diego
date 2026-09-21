@@ -8,9 +8,8 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     <NextThemesProvider
       attribute="class"
       defaultTheme="paper"
-      enableSystem
       disableTransitionOnChange
-      themes={["paper", "glass", "dark", "light"]}
+      themes={["paper", "dark"]}
     >
       {children}
     </NextThemesProvider>

@@ -24,11 +24,11 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-// Paper theme defaults are preloaded; the rest only download once picked in <FontPicker>.
+// The defaults (VT323 body, Silkscreen labels) are preloaded; the rest only download once picked in <FontPicker>.
 const jacquard24 = Jacquard_24({
   variable: "--font-jacquard-24",
   weight: "400",
-  subsets: ["latin"],
+  preload: false,
 });
 const silkscreen = Silkscreen({
   variable: "--font-silkscreen",
@@ -52,7 +52,7 @@ const pixelifySans = Pixelify_Sans({
 const vt323 = VT323({
   variable: "--font-vt323",
   weight: "400",
-  preload: false,
+  subsets: ["latin"],
 });
 const jersey15 = Jersey_15({
   variable: "--font-jersey-15",
@@ -110,8 +110,9 @@ export const fontVariables = [
   .join(" ");
 
 // `scale` multiplies the root font size: pixel fonts have wildly different x-heights.
-// First entry is the default (must match the fallbacks in globals.css `.paper`).
+// First entry is the default (must match the fallbacks in globals.css `:root`).
 export const PAPER_FONTS = [
+  { label: "VT323", variable: "--font-vt323", scale: 1.25 },
   { label: "Jacquard 24", variable: "--font-jacquard-24", scale: 1.3 },
   { label: "Jacquard 12", variable: "--font-jacquard-12", scale: 1.3 },
   {
@@ -121,7 +122,6 @@ export const PAPER_FONTS = [
   },
   { label: "Pixelify Sans", variable: "--font-pixelify-sans", scale: 1 },
   { label: "Silkscreen", variable: "--font-silkscreen", scale: 0.9 },
-  { label: "VT323", variable: "--font-vt323", scale: 1.25 },
   { label: "Jersey 15", variable: "--font-jersey-15", scale: 1.25 },
   { label: "Tiny5", variable: "--font-tiny5", scale: 1.05 },
   { label: "DotGothic16", variable: "--font-dotgothic16", scale: 1 },

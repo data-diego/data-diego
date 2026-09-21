@@ -12,7 +12,6 @@ import { useIsAdmin } from "@/hooks/use-is-admin";
 import { InlineEditExperience } from "@/components/admin/inline-edit-experience";
 import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import { LiquidGlass } from "@/components/ui/liquid-glass";
 import { cn } from "@/lib/utils";
 
 type ExperienceItem = NonNullable<
@@ -163,16 +162,8 @@ export function Experience({ className }: { className?: string }) {
                 layoutId={`card-${active._id}-${id}`}
                 ref={ref}
                 onLayoutAnimationComplete={() => setContentScrollable(true)}
-                className="glass-surface relative w-full max-w-[500px] h-fit max-h-[90%] flex flex-col bg-background border border-border rounded-2xl overflow-hidden shadow-xl"
+                className="relative w-full max-w-[500px] h-fit max-h-[90%] flex flex-col bg-background border border-border rounded-2xl overflow-hidden shadow-xl"
               >
-                <LiquidGlass
-                  radius={16}
-                  scale={48}
-                  depth={30}
-                  magnify={0.1}
-                  chroma={0.22}
-                  surfaceColor="oklch(0.22 0.025 270 / 0.26)"
-                />
                 <div
                   className={cn(
                     "relative z-10 p-6",
@@ -277,7 +268,7 @@ export function Experience({ className }: { className?: string }) {
                 type="button"
                 layoutId={`card-${job._id}-${id}`}
                 onClick={() => setActive(job)}
-                className="glass-row group/card flex items-center gap-4 p-3 -mx-3 rounded-xl hover:bg-muted/50 cursor-pointer transition-colors relative w-full text-left"
+                className="group/card flex items-center gap-4 p-3 -mx-3 rounded-xl hover:bg-muted/50 cursor-pointer transition-colors relative w-full text-left"
               >
                 <motion.div
                   layoutId={`logo-${job._id}-${id}`}

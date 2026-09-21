@@ -59,7 +59,7 @@ export default function RootLayout({
             <PaperBackground />
             <ConvexClientProvider>
               <Navbar />
-              <main className="flex-1 pt-14">{children}</main>
+              <main className="flex-1 pt-[33px]">{children}</main>
               <Footer />
               <Toaster />
             </ConvexClientProvider>

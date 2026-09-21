@@ -53,7 +53,7 @@ export function Skills({ className }: { className?: string }) {
                     <Link
                       key={skill}
                       href={`/blog?tag=${encodeURIComponent(skill)}`}
-                      className="glass-chip inline-flex items-center gap-1.5 rounded-md border border-border px-2.5 py-1 text-xs font-medium hover:bg-foreground hover:text-background hover:border-foreground transition-colors"
+                      className="inline-flex items-center gap-1.5 rounded-md border border-border px-2.5 py-1 text-xs font-medium hover:bg-foreground hover:text-background hover:border-foreground transition-colors"
                     >
                       <SkillIcon name={skill} />
                       {skill}

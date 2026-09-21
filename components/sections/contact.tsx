@@ -62,7 +62,6 @@ export function Contact({ className }: { className?: string }) {
 
         <div className="flex items-center gap-4">
           <StatefulButton
-            className="glass-cta"
             onClick={handleSend}
             disabled={!name || !email || !message}
           >
