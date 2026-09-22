@@ -58,10 +58,11 @@ http.route({
       data: { id: string; url: string; properties: Record<string, Record<string, unknown>> };
     };
 
-    const fields = Object.entries(page.properties)
-      .map(([name, prop]) => ({ name, value: plain(prop), inline: true }))
+    const fields = ["Asignar", "Producto", "Valor", "Prioridad", "Esfuerzo"]
+      .map((name) => ({ name, value: page.properties[name] && plain(page.properties[name]), inline: true }))
       .filter((f): f is { name: string; value: string; inline: boolean } => !!f.value);
-    const title = fields.find((f) => page.properties[f.name].type === "title")?.value ?? "Untitled";
+    const titleProp = Object.values(page.properties).find((p) => p.type === "title");
+    const title = (titleProp && plain(titleProp)) ?? "Untitled";
     const comments = await notionComments(page.id);
 
     const res = await fetch(process.env.DISCORD_WEBHOOK_URL!, {
@@ -72,10 +73,7 @@ http.route({
           {
             title: `✅ ${title}`.slice(0, 256),
             url: page.url,
-            fields: fields
-              .filter((f) => page.properties[f.name].type !== "title")
-              .slice(0, 25)
-              .map((f) => ({ ...f, value: f.value.slice(0, 1024) })),
+            fields: fields.map((f) => ({ ...f, value: f.value.slice(0, 1024) })),
             description: comments.length
               ? comments.map((c) => `> ${c}`).join("\n").slice(0, 4096)
               : undefined,
