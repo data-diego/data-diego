@@ -50,7 +50,6 @@ The rich text blog editor uses **TipTap** (in `/app/admin/posts`). Blog content 
 | Variable | Purpose |
 |---|---|
 | `NEXT_PUBLIC_CONVEX_URL` | Convex deployment URL |
-| `CONVEX_DEPLOY_KEY` | Convex deploy key |
 | `ADMIN_EMAILS` | Comma-separated list of admin email addresses |
 | `RESEND_API_KEY` | Resend email API key |
 | `OPENROUTER_API_KEY` | OpenRouter API key for AI summarization |

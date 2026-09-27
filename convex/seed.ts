@@ -39,8 +39,8 @@ const EXPERIENCES = [
   },
 ];
 
-// CLI/dashboard only (internal): `npx convex run seed:syncExperiences` (add `--prod` for
-// production). Upserts EXPERIENCES by slug — patching keeps any uploaded logo — and moves
+// CLI/dashboard only (internal): `npx convex run seed:syncExperiences`.
+// Upserts EXPERIENCES by slug — patching keeps any uploaded logo — and moves
 // every other entry after them, preserving their relative order.
 export const syncExperiences = internalMutation({
   args: {},
