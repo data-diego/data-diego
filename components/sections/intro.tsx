@@ -12,7 +12,7 @@ export function Intro({ className }: { className?: string }) {
       >
         <h1 className="text-lg leading-snug">
           *Diego Valenzuela, also known as datadiego, is a software engineer at
-          BipBop Labs, inventor and indie hacker based in Santiago, Chile.
+          BipBop Labs and indie hacker based in Santiago, Chile.
         </h1>
         <p className="leading-snug">
           *I translate ideas into real products people use every day, from code

@@ -24,7 +24,7 @@ export default async function OGImage() {
           Diego Valenzuela
         </div>
         <div style={{ fontSize: 40, lineHeight: 1.1, marginTop: 24 }}>
-          Software engineer, inventor and indie hacker based in Santiago, Chile.
+          Software engineer and indie hacker based in Santiago, Chile.
         </div>
       </div>
     </div>,

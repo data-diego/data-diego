@@ -4,7 +4,7 @@ import { Intro } from "@/components/sections/intro";
 export const metadata: Metadata = {
   title: "About",
   description:
-    "Diego Valenzuela, also known as datadiego: inventor and indie hacker based in Santiago, Chile.",
+    "Diego Valenzuela, also known as datadiego: indie hacker based in Santiago, Chile.",
   alternates: { canonical: "/about" },
 };
 
