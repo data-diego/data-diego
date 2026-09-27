@@ -135,8 +135,46 @@ export function PostEditor({ initialData }: PostEditorProps) {
   };
 
   return (
-    <div className="space-y-6">
-      <div className="grid gap-4">
+    <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_320px] lg:items-start">
+      <div className="grid gap-4 min-w-0">
+        <Input
+          id="title"
+          aria-label="Title"
+          value={title}
+          onChange={(e) => handleTitleChange(e.target.value)}
+          placeholder="Post title"
+          className="h-auto border-0 px-0 text-3xl md:text-3xl font-bold shadow-none focus-visible:ring-0"
+        />
+        <RichTextEditor
+          content={content}
+          onChange={setContent}
+          placeholder="Write your post content..."
+        />
+        <p className="text-xs text-muted-foreground">
+          Drop or paste images directly into the editor. Content is stored as Markdown.
+        </p>
+      </div>
+
+      <aside className="grid gap-4 lg:sticky lg:top-8">
+        <div className="flex items-center gap-2">
+          <Button onClick={() => void handleSave()} disabled={saving} className="flex-1">
+            {saving ? "Saving..." : initialData ? "Update" : "Create"}
+          </Button>
+          <Button variant="outline" onClick={() => router.push("/admin/posts")}>
+            Cancel
+          </Button>
+        </div>
+
+        <label className="flex items-center gap-2 cursor-pointer">
+          <input
+            type="checkbox"
+            checked={published}
+            onChange={(e) => setPublished(e.target.checked)}
+            className="rounded"
+          />
+          <span className="text-sm font-medium">Publish</span>
+        </label>
+
         <div className="grid gap-2">
           <Label>Cover image</Label>
           <ImageUpload
@@ -150,17 +188,7 @@ export function PostEditor({ initialData }: PostEditorProps) {
               setCoverImageId(undefined);
               setCoverImageUrl(null);
             }}
-            className="w-full h-48"
-          />
-        </div>
-
-        <div className="grid gap-2">
-          <Label htmlFor="title">Title</Label>
-          <Input
-            id="title"
-            value={title}
-            onChange={(e) => handleTitleChange(e.target.value)}
-            placeholder="Post title"
+            className="w-full h-40"
           />
         </div>
 
@@ -181,7 +209,7 @@ export function PostEditor({ initialData }: PostEditorProps) {
             value={excerpt}
             onChange={(e) => setExcerpt(e.target.value)}
             placeholder="Brief description of the post"
-            rows={2}
+            rows={3}
           />
         </div>
 
@@ -208,50 +236,17 @@ export function PostEditor({ initialData }: PostEditorProps) {
           )}
         </div>
 
-        <div className="grid gap-2">
-          <Label>Content</Label>
-          <RichTextEditor
-            content={content}
-            onChange={setContent}
-            placeholder="Write your post content..."
-          />
-          <p className="text-xs text-muted-foreground">
-            Drop or paste images directly into the editor. Content is stored as Markdown.
-          </p>
-        </div>
-      </div>
-
-      <div className="flex items-center justify-between border-t pt-6">
-        <div className="flex items-center gap-4">
-          <label className="flex items-center gap-2 cursor-pointer">
-            <input
-              type="checkbox"
-              checked={published}
-              onChange={(e) => setPublished(e.target.checked)}
-              className="rounded"
-            />
-            <span className="text-sm font-medium">Publish</span>
-          </label>
-          {initialData && (
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => void handleGenerateSummary()}
-              disabled={generatingSummary}
-            >
-              {generatingSummary ? "Generating..." : "Generate AI Summary"}
-            </Button>
-          )}
-        </div>
-        <div className="flex items-center gap-2">
-          <Button variant="outline" onClick={() => router.push("/admin/posts")}>
-            Cancel
+        {initialData && (
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => void handleGenerateSummary()}
+            disabled={generatingSummary}
+          >
+            {generatingSummary ? "Generating..." : "Generate AI Summary"}
           </Button>
-          <Button onClick={() => void handleSave()} disabled={saving}>
-            {saving ? "Saving..." : initialData ? "Update" : "Create"}
-          </Button>
-        </div>
-      </div>
+        )}
+      </aside>
     </div>
   );
 }
