@@ -28,6 +28,15 @@ export const metadata: Metadata = {
     siteName: "datadiego.com",
     locale: "en_US",
     type: "website",
+    // Rendered by `pnpm og:video`; Discord/Telegram/Slack autoplay it, others fall back to the image.
+    videos: [
+      {
+        url: "https://datadiego.com/og/home.mp4",
+        width: 1200,
+        height: 630,
+        type: "video/mp4",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",

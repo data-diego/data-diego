@@ -8,7 +8,8 @@
     "dev:backend": "convex dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint . --ignore-pattern \"convex/_generated/**\""
+    "lint": "eslint . --ignore-pattern \"convex/_generated/**\"",
+    "og:video": "pnpm dlx tsx scripts/og-video.mts"
   },
   "dependencies": {
     "@auth/core": "0.37.0",
