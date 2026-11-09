@@ -1,1 +1,1 @@
-<img src=".github/profile-card.svg" alt="ASCII portrait of Diego Valenzuela. Software Engineer and tech creator in Santiago, Chile. Ask about entrepreneurship, Arduino, VR. Website: datadiego.com, GitHub: data-diego, X: @datadiego_" width="100%">
+<img src=".github/profile-card.svg?v=2" alt="ASCII portrait of Diego Valenzuela. Software Engineer and tech creator in Santiago, Chile. Ask about entrepreneurship, Arduino, VR. Website: datadiego.com, GitHub: data-diego, X: @datadiego_" width="100%">
