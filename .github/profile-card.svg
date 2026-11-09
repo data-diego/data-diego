@@ -33,24 +33,22 @@ text { white-space: pre }
 <tspan x="24" y="540">  ;%,    MMMM@,  ,:       '   . ,MMM      ;M@88j</tspan>
 </text>
 <text fill="#c9d1d9" xml:space="preserve">
-<tspan x="523.2" y="100"><tspan class="t">diego</tspan>@<tspan class="t">datadiego</tspan><tspan class="d"> ————————————————————————————————————</tspan></tspan>
-<tspan x="523.2" y="120"><tspan class="d">. </tspan><tspan class="k">Name</tspan>:<tspan class="d"> ........................... </tspan><tspan class="v">Diego Valenzuela</tspan></tspan>
-<tspan x="523.2" y="140"><tspan class="d">. </tspan><tspan class="k">Role</tspan>:<tspan class="d"> ............ </tspan><tspan class="v">Software Engineer, tech creator</tspan></tspan>
-<tspan x="523.2" y="160"><tspan class="d">. </tspan><tspan class="k">Location</tspan>:<tspan class="d"> ........................ </tspan><tspan class="v">Santiago, Chile</tspan></tspan>
-<tspan x="523.2" y="180"></tspan>
-<tspan x="523.2" y="200"><tspan class="d">. </tspan><tspan class="k">Ask.About</tspan>:<tspan class="d"> ............... </tspan><tspan class="v">Web &amp; mobile dev, UI/UX</tspan></tspan>
+<tspan x="523.2" y="120"><tspan class="t">diego</tspan>@<tspan class="t">datadiego</tspan><tspan class="d"> ————————————————————————————————————</tspan></tspan>
+<tspan x="523.2" y="140"><tspan class="d">. </tspan><tspan class="k">Name</tspan>:<tspan class="d"> ........................... </tspan><tspan class="v">Diego Valenzuela</tspan></tspan>
+<tspan x="523.2" y="160"><tspan class="d">. </tspan><tspan class="k">Role</tspan>:<tspan class="d"> ............ </tspan><tspan class="v">Software Engineer, tech creator</tspan></tspan>
+<tspan x="523.2" y="180"><tspan class="d">. </tspan><tspan class="k">Location</tspan>:<tspan class="d"> ........................ </tspan><tspan class="v">Santiago, Chile</tspan></tspan>
+<tspan x="523.2" y="200"></tspan>
 <tspan x="523.2" y="220"><tspan class="d">. </tspan><tspan class="k">Ask.About</tspan>:<tspan class="d"> ......... </tspan><tspan class="v">Entrepreneurship, Arduino, VR</tspan></tspan>
 <tspan x="523.2" y="240"><tspan class="d">. </tspan><tspan class="k">Dont.Ask</tspan>:<tspan class="d"> .............. </tspan><tspan class="v">Blockchain, Stuart Little</tspan></tspan>
-<tspan x="523.2" y="260"><tspan class="d">. </tspan><tspan class="k">Dont.Ask</tspan>:<tspan class="d"> .......... </tspan><tspan class="v">Where I was on Feb 29th, 2019</tspan></tspan>
-<tspan x="523.2" y="280"></tspan>
-<tspan x="523.2" y="300"><tspan class="d">. </tspan><tspan class="k">Hobbies.Music</tspan>:<tspan class="d"> ..... </tspan><tspan class="v">Chill jazz, bossa nova, samba</tspan></tspan>
-<tspan x="523.2" y="320"><tspan class="d">. </tspan><tspan class="k">Hobbies.Plays</tspan>:<tspan class="d"> ................. </tspan><tspan class="v">Saxophone, guitar</tspan></tspan>
-<tspan x="523.2" y="340"><tspan class="d">. </tspan><tspan class="k">Hobbies.Sports</tspan>:<tspan class="d"> . </tspan><tspan class="v">Mountain biking, football, hoops</tspan></tspan>
-<tspan x="523.2" y="360"><tspan class="d">. </tspan><tspan class="k">Hobbies.Other</tspan>:<tspan class="d"> ...... </tspan><tspan class="v">Language learning, traveling</tspan></tspan>
-<tspan x="523.2" y="380"></tspan>
-<tspan x="523.2" y="400">- Contact<tspan class="d"> ——————————————————————————————————————————</tspan></tspan>
-<tspan x="523.2" y="420"><tspan class="d">. </tspan><tspan class="k">Website</tspan>:<tspan class="d"> ........................... </tspan><tspan class="v">datadiego.com</tspan></tspan>
-<tspan x="523.2" y="440"><tspan class="d">. </tspan><tspan class="k">GitHub</tspan>:<tspan class="d"> ............................... </tspan><tspan class="v">data-diego</tspan></tspan>
-<tspan x="523.2" y="460"><tspan class="d">. </tspan><tspan class="k">X</tspan>:<tspan class="d"> ................................... </tspan><tspan class="v">@datadiego_</tspan></tspan>
+<tspan x="523.2" y="260"></tspan>
+<tspan x="523.2" y="280"><tspan class="d">. </tspan><tspan class="k">Hobbies.Music</tspan>:<tspan class="d"> ..... </tspan><tspan class="v">Chill jazz, bossa nova, samba</tspan></tspan>
+<tspan x="523.2" y="300"><tspan class="d">. </tspan><tspan class="k">Hobbies.Plays</tspan>:<tspan class="d"> ................. </tspan><tspan class="v">Saxophone, guitar</tspan></tspan>
+<tspan x="523.2" y="320"><tspan class="d">. </tspan><tspan class="k">Hobbies.Sports</tspan>:<tspan class="d"> . </tspan><tspan class="v">Mountain biking, football, hoops</tspan></tspan>
+<tspan x="523.2" y="340"><tspan class="d">. </tspan><tspan class="k">Hobbies.Other</tspan>:<tspan class="d"> ...... </tspan><tspan class="v">Language learning, traveling</tspan></tspan>
+<tspan x="523.2" y="360"></tspan>
+<tspan x="523.2" y="380">- Contact<tspan class="d"> ——————————————————————————————————————————</tspan></tspan>
+<tspan x="523.2" y="400"><tspan class="d">. </tspan><tspan class="k">Website</tspan>:<tspan class="d"> ........................... </tspan><tspan class="v">datadiego.com</tspan></tspan>
+<tspan x="523.2" y="420"><tspan class="d">. </tspan><tspan class="k">GitHub</tspan>:<tspan class="d"> ............................... </tspan><tspan class="v">data-diego</tspan></tspan>
+<tspan x="523.2" y="440"><tspan class="d">. </tspan><tspan class="k">X</tspan>:<tspan class="d"> ................................... </tspan><tspan class="v">@datadiego_</tspan></tspan>
 </text>
 </svg>
